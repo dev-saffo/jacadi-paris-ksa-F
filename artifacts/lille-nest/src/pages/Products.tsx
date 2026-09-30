@@ -4,8 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartSidebar } from '@/components/cart/CartSidebar';
 import { ProductCard } from '@/components/products/ProductCard';
-import { AgeFilterBar } from '@/components/products/AgeFilterBar';
-import { products, categories, ageFilters } from '@/data/products';
+import { products, categories } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal, Grid3X3, List, ChevronDown, SearchX } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,9 +14,8 @@ const Products = () => {
   const categoryParam = searchParams.get('category');
   const filterParam = searchParams.get('filter');
 
-  const [selectedAge, setSelectedAge] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
-  const [sortBy, setSortBy] = useState('featured');
+  const [sortBy, setSortBy] = useState('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
@@ -34,22 +32,7 @@ const Products = () => {
       result = result.filter(p => p.categories.includes(selectedCategory));
     }
 
-    // Filter by age
-    if (selectedAge) {
-      const ageFilter = ageFilters.find(f => f.id === selectedAge);
-      if (ageFilter) {
-        result = result.filter(p =>
-          p.ageRange.min <= ageFilter.range.max && p.ageRange.max >= ageFilter.range.min
-        );
-      }
-    }
-
-    // Filter by special filters
-    if (filterParam === 'new') {
-      result = result.filter(p => p.isNew);
-    } else if (filterParam === 'bestseller') {
-      result = result.filter(p => p.isBestseller);
-    } else if (filterParam === 'sale') {
+    if (filterParam === 'sale') {
       result = result.filter(p => p.originalPrice);
     }
 
@@ -61,23 +44,14 @@ const Products = () => {
       case 'price-high':
         result.sort((a, b) => b.price - a.price);
         break;
-      case 'rating':
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'newest':
-        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-        break;
       default:
-        // Featured: bestsellers first
-        result.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0));
+        break;
     }
 
     return result;
-  }, [selectedCategory, selectedAge, filterParam, sortBy]);
+  }, [selectedCategory, filterParam, sortBy]);
 
   const getPageTitle = () => {
-    if (filterParam === 'new') return 'New Arrivals';
-    if (filterParam === 'bestseller') return 'Bestsellers';
     if (filterParam === 'sale') return 'Sale';
     if (selectedCategory) {
       const cat = categories.find(c => c.slug === selectedCategory);
@@ -105,11 +79,6 @@ const Products = () => {
         </div>
 
         <div className="container py-8">
-          {/* Filters */}
-          <div className="mb-8">
-            <AgeFilterBar selectedAge={selectedAge} onSelect={setSelectedAge} />
-          </div>
-
           {/* Category pills */}
           <div className="flex flex-wrap gap-3 mb-6">
             <Button
@@ -153,11 +122,9 @@ const Products = () => {
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 <span className="text-sm font-medium">
-                  {sortBy === 'featured' && 'Featured'}
-                  {sortBy === 'newest' && 'Newest'}
+                  {sortBy === 'default' && 'Recommended'}
                   {sortBy === 'price-low' && 'Price: Low to High'}
                   {sortBy === 'price-high' && 'Price: High to Low'}
-                  {sortBy === 'rating' && 'Top Rated'}
                 </span>
                 <ChevronDown className={cn("h-4 w-4 transition-transform", sortDropdownOpen && "rotate-180")} />
               </Button>
@@ -171,11 +138,9 @@ const Products = () => {
                   />
                   <div className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded shadow-lg z-20 overflow-hidden">
                     {[
-                      { value: 'featured', label: 'Featured' },
-                      { value: 'newest', label: 'Newest' },
+                      { value: 'default', label: 'Recommended' },
                       { value: 'price-low', label: 'Price: Low to High' },
                       { value: 'price-high', label: 'Price: High to Low' },
-                      { value: 'rating', label: 'Top Rated' },
                     ].map((option) => (
                       <button
                         key={option.value}
@@ -240,7 +205,6 @@ const Products = () => {
               <Button
                 onClick={() => {
                   setSelectedCategory(null);
-                  setSelectedAge(null);
                 }}
                 variant="default"
               >
