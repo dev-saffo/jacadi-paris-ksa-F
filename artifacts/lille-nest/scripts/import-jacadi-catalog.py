@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Import Jacadi Saudi Arabia's public English catalog and CMS pages.
+"""Import Jacadi Saudi Arabia's public English product catalog and CMS pages.
 
-Product and editorial images are stored as source URLs; this script never
-downloads image files. It reads only public sitemap-listed pages and checks
-robots.txt before every request.
+This imports public product facts, product descriptions, and public page text.
+It does not collect or download image URLs/files. It reads sitemap-listed pages
+and checks robots.txt before every request.
 """
 
 from __future__ import annotations
@@ -92,14 +92,14 @@ def fetch_bytes(
 
 
 class ProductPageParser(HTMLParser):
-    def __init__(self, expected_slug: str):
+    def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.expected_slug = expected_slug.lower()
         self.stack: list[dict[str, str]] = []
         self.meta: dict[str, str] = {}
         self.json_ld: list[str] = []
         self.script_buffer: list[str] | None = None
-        self.images: list[str] = []
+        self.name_parts: list[str] = []
+        self.in_name = False
         self.sizes: list[str] = []
         self.colors: list[dict[str, str]] = []
         self.current_color: dict[str, str] | None = None
@@ -109,20 +109,6 @@ class ProductPageParser(HTMLParser):
 
     def _inside_class(self, fragment: str) -> bool:
         return any(fragment in item["class"] for item in self.stack)
-
-    def _add_image(self, value: str) -> None:
-        value = html.unescape(value.strip())
-        if not value.startswith("https://www.jacadi.sa/"):
-            return
-        filename = urllib.parse.urlparse(value).path.rsplit("/", 1)[-1].lower()
-        if self.expected_slug not in filename:
-            return
-        if not re.search(r"\.(?:jpg|jpeg|png|webp)$", filename):
-            return
-        if "thumbnail_default" in value or "medium_default" in value:
-            return
-        if value not in self.images:
-            self.images.append(value)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = {key: value or "" for key, value in attrs}
@@ -137,6 +123,8 @@ class ProductPageParser(HTMLParser):
             self.canonical = values.get("href", "")
         elif tag == "script" and values.get("type", "").lower() == "application/ld+json":
             self.script_buffer = []
+        elif tag == "h1" and not self.name_parts:
+            self.in_name = True
 
         in_variants = self._inside_class("product-variants")
         if in_variants and tag == "input":
@@ -152,13 +140,9 @@ class ProductPageParser(HTMLParser):
         elif tag == "a" and self.current_color and values.get("href", "").startswith(BASE):
             self.current_color["url"] = values["href"]
 
-        if tag == "img":
-            for attr in ("src", "data-src", "data-image-large-src", "data-zoom-image"):
-                self._add_image(values.get(attr, ""))
-        elif tag == "a":
-            self._add_image(values.get("href", ""))
-
     def handle_endtag(self, tag: str) -> None:
+        if tag == "h1" and self.in_name:
+            self.in_name = False
         if tag == "script" and self.script_buffer is not None:
             self.json_ld.append("".join(self.script_buffer))
             self.script_buffer = None
@@ -175,6 +159,8 @@ class ProductPageParser(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self.script_buffer is not None:
             self.script_buffer.append(data)
+        if self.in_name:
+            self.name_parts.append(data)
         if self._inside_class("regular-price"):
             self.regular_price_parts.append(data)
         if self._inside_class("product-description") and not any(
@@ -184,9 +170,14 @@ class ProductPageParser(HTMLParser):
 
     def product_schema(self) -> dict:
         for raw in self.json_ld:
-            try:
-                parsed = json.loads(html.unescape(raw))
-            except (json.JSONDecodeError, TypeError):
+            parsed = None
+            for candidate in (raw, html.unescape(raw)):
+                try:
+                    parsed = json.loads(candidate)
+                    break
+                except (json.JSONDecodeError, TypeError):
+                    continue
+            if parsed is None:
                 continue
             items = parsed if isinstance(parsed, list) else [parsed]
             for item in items:
@@ -225,11 +216,6 @@ class ContentPageParser(HTMLParser):
         if not self.skipped and tag in self.TEXT_TAGS and not self.current_tag:
             self.current_tag = tag
             self.current_parts = []
-        if tag == "img":
-            src = values.get("src") or values.get("data-src")
-            if src.startswith(BASE) and "/img/cms/" in src and src not in self.images:
-                self.images.append(src)
-
     def handle_endtag(self, tag: str) -> None:
         if tag == "title":
             self.in_title = False
@@ -261,37 +247,35 @@ def parse_product(url: str, raw: bytes) -> dict | None:
     category_slug, final_segment = match.groups()
     filename = final_segment.removesuffix(".html")
     slug = re.sub(r"^(?:\d+-)+", "", filename)
-    parser = ProductPageParser(slug)
+    parser = ProductPageParser()
     parser.feed(raw.decode("utf-8", "replace"))
     schema = parser.product_schema()
-    if not schema:
-        return None
 
     offers = schema.get("offers", {})
     if isinstance(offers, list):
         offers = offers[0] if offers else {}
+    if not isinstance(offers, dict):
+        offers = {}
+    product_name = (
+        normalize_text(schema.get("name", ""))
+        or normalize_text(" ".join(parser.name_parts))
+        or normalize_text(parser.meta.get("og:title", "").split("|", 1)[0])
+    )
+    price_value = offers.get("price") or parser.meta.get("product:price:amount")
     try:
-        price = float(offers.get("price"))
+        price = float(price_value)
     except (TypeError, ValueError):
         price = 0
-    if not schema.get("name") or price <= 0:
+    if not product_name or price <= 0:
         return None
 
-    regular_text = normalize_text(" ".join(parser.regular_price_parts))
-    amounts = re.findall(r"\d+(?:[.,]\d{1,2})?", regular_text.replace(",", ""))
-    original_price = float(amounts[-1]) if amounts else None
-    if not original_price or original_price <= price:
-        original_price = None
-
-    schema_images = schema.get("image", [])
-    if isinstance(schema_images, str):
-        schema_images = [schema_images]
-    images = list(dict.fromkeys([*schema_images, parser.meta.get("og:image", ""), *parser.images]))
-    images = [
-        image for image in images
-        if image.startswith("https://www.jacadi.sa/")
-        and re.search(r"\.(?:jpg|jpeg|png|webp)(?:\?|$)", image, re.I)
-    ]
+    original_price = None
+    if schema:
+        regular_text = normalize_text(" ".join(parser.regular_price_parts))
+        amounts = re.findall(r"\d+(?:[.,]\d{1,2})?", regular_text.replace(",", ""))
+        original_price = float(amounts[-1]) if amounts else None
+        if not original_price or original_price <= price:
+            original_price = None
 
     variants = []
     seen_variants = set()
@@ -301,8 +285,10 @@ def parse_product(url: str, raw: bytes) -> dict | None:
             variants.append(color)
             seen_variants.add(key)
 
-    description = normalize_text(schema.get("description", "")) or normalize_text(
-        " ".join(parser.description_parts)
+    description = (
+        normalize_text(schema.get("description", ""))
+        or normalize_text(" ".join(parser.description_parts))
+        or normalize_text(parser.meta.get("description", ""))
     )
     source_url = parser.canonical if parser.canonical.startswith(BASE) else url
     category_name = category_slug.replace("-", " ").title()
@@ -310,20 +296,20 @@ def parse_product(url: str, raw: bytes) -> dict | None:
 
     return {
         "id": product_id,
-        "title": normalize_text(schema["name"]),
+        "title": product_name,
         "slug": slug,
         "description": description,
         "price": price,
         "originalPrice": original_price,
-        "currency": offers.get("priceCurrency") or "SAR",
-        "images": images,
+        "currency": offers.get("priceCurrency") or parser.meta.get("product:price:currency") or "SAR",
+        "images": [],
         "categories": [category_slug],
         "categoryName": category_name,
         "sizes": list(dict.fromkeys(parser.sizes)),
         "colors": variants,
         "availability": offers.get("availability", "").rsplit("/", 1)[-1],
         "sourceUrl": source_url,
-        "reference": schema.get("sku", ""),
+        "reference": schema.get("sku", "") or product_id,
     }
 
 
@@ -350,7 +336,7 @@ def parse_content_page(url: str, raw: bytes) -> dict:
         "description": normalize_text(parser.meta.get("description", "")),
         "sourceUrl": url,
         "blocks": blocks,
-        "images": parser.images[:30],
+        "images": [],
     }
 
 
@@ -448,11 +434,22 @@ def main() -> None:
         state["pages"][url] = parse_content_page(url, raw)
         save_state(state)
 
+    save_state(state)
+
     products = sorted(
         state["products"].values(),
         key=lambda item: (item["categories"][0], item["title"].casefold()),
     )
-    categories_by_slug: dict[str, dict] = {}
+    categories_by_slug: dict[str, dict] = {
+        slug: {
+            "id": slug,
+            "slug": slug,
+            "name": slug.replace("-", " ").title(),
+            "productCount": 0,
+            "sourceUrl": url,
+        }
+        for slug, url in category_urls.items()
+    }
     for item in products:
         slug = item["categories"][0]
         if slug not in categories_by_slug:
