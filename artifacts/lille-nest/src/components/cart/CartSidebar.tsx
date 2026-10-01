@@ -1,5 +1,6 @@
 import { X, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProductImage } from '@/components/products/ProductImage';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';

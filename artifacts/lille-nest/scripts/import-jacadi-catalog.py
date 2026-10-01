@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Import Jacadi Saudi Arabia's public English product catalog and CMS pages.
 
-This imports public product facts, product descriptions, and public page text.
-It does not collect or download image URLs/files. It reads sitemap-listed pages
-and checks robots.txt before every request.
+This imports public product facts, descriptions, and page text. Product image
+URLs may be recorded for linking, but image files are never downloaded. It reads
+sitemap-listed pages and checks robots.txt before every request.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ USER_AGENT = "JacadiPublicCatalogImporter/1.0"
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUTPUT = ROOT / "artifacts/lille-nest/src/data/jacadi-catalog.json"
 STATE_PATH = ROOT / ".cache/jacadi-catalog-import-state.json"
+IMAGE_STATE_PATH = ROOT / ".cache/jacadi-image-import-state.json"
 NS = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 PRODUCT_PATH = re.compile(r"^/en/([^/?]+)/([^/]+)\.html$")
 
@@ -105,6 +106,7 @@ class ProductPageParser(HTMLParser):
         self.current_color: dict[str, str] | None = None
         self.regular_price_parts: list[str] = []
         self.description_parts: list[str] = []
+        self.gallery_images: list[str] = []
         self.canonical = ""
 
     def _inside_class(self, fragment: str) -> bool:
@@ -125,6 +127,16 @@ class ProductPageParser(HTMLParser):
             self.script_buffer = []
         elif tag == "h1" and not self.name_parts:
             self.in_name = True
+
+        if tag == "img" and "image" in values.get("itemprop", "").lower().split():
+            image_url = (
+                values.get("data-image-large-src")
+                or values.get("data-full-size-image-url")
+                or values.get("data-image-medium-src")
+                or values.get("src")
+            )
+            if image_url:
+                self.gallery_images.append(image_url)
 
         in_variants = self._inside_class("product-variants")
         if in_variants and tag == "input":
@@ -184,6 +196,59 @@ class ProductPageParser(HTMLParser):
                 if isinstance(item, dict) and item.get("@type") == "Product":
                     return item
         return {}
+
+
+def schema_image_candidates(schema: dict) -> list[str]:
+    schema_images = schema.get("image", [])
+    if isinstance(schema_images, str):
+        return [schema_images]
+    if isinstance(schema_images, dict):
+        return [
+            value
+            for value in (schema_images.get("contentUrl"), schema_images.get("url"))
+            if isinstance(value, str)
+        ]
+    if isinstance(schema_images, list):
+        candidates: list[str] = []
+        for schema_image in schema_images:
+            if isinstance(schema_image, str):
+                candidates.append(schema_image)
+            elif isinstance(schema_image, dict):
+                candidates.extend(
+                    value
+                    for value in (schema_image.get("contentUrl"), schema_image.get("url"))
+                    if isinstance(value, str)
+                )
+        return candidates
+    return []
+
+
+def normalize_product_images(candidates: list[str]) -> list[str]:
+    """Keep distinct public Jacadi product image links; never fetch image bytes."""
+    images: list[str] = []
+    seen_assets: set[str] = set()
+    for candidate in candidates:
+        if not candidate or not candidate.strip():
+            continue
+        image_url = urllib.parse.urljoin(f"{BASE}/", html.unescape(candidate.strip()))
+        parsed = urllib.parse.urlparse(image_url)
+        host = (parsed.hostname or "").lower()
+        image_extension = Path(parsed.path).suffix.lower()
+        if (
+            parsed.scheme != "https"
+            or not (host == "jacadi.sa" or host.endswith(".jacadi.sa"))
+            or image_extension not in {".jpg", ".jpeg", ".png", ".webp", ".avif"}
+        ):
+            continue
+
+        path = urllib.parse.unquote(parsed.path)
+        asset_id = re.search(r"/(\d+)-[^/]+/", path)
+        identity = f"asset:{asset_id.group(1)}" if asset_id else f"url:{image_url}"
+        if identity in seen_assets:
+            continue
+        seen_assets.add(identity)
+        images.append(image_url)
+    return images
 
 
 class ContentPageParser(HTMLParser):
@@ -293,6 +358,13 @@ def parse_product(url: str, raw: bytes) -> dict | None:
     source_url = parser.canonical if parser.canonical.startswith(BASE) else url
     category_name = category_slug.replace("-", " ").title()
     product_id = str(schema.get("sku") or filename.split("-", 1)[0])
+    images = normalize_product_images(
+        [
+            parser.meta.get("og:image", ""),
+            *schema_image_candidates(schema),
+            *parser.gallery_images,
+        ]
+    )
 
     return {
         "id": product_id,
@@ -302,7 +374,7 @@ def parse_product(url: str, raw: bytes) -> dict | None:
         "price": price,
         "originalPrice": original_price,
         "currency": offers.get("priceCurrency") or parser.meta.get("product:price:currency") or "SAR",
-        "images": [],
+        "images": images,
         "categories": [category_slug],
         "categoryName": category_name,
         "sizes": list(dict.fromkeys(parser.sizes)),
@@ -396,11 +468,118 @@ def save_state(state: dict) -> None:
     temporary.replace(STATE_PATH)
 
 
+def save_catalog(path: Path, catalog: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(catalog, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def save_image_state(state: dict) -> None:
+    IMAGE_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = IMAGE_STATE_PATH.with_suffix(".tmp")
+    temporary.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+    temporary.replace(IMAGE_STATE_PATH)
+
+
+def import_images_only(args: argparse.Namespace, robots: urllib.robotparser.RobotFileParser) -> None:
+    if not args.output.exists():
+        raise SystemExit(f"Catalog file not found: {args.output}")
+    try:
+        catalog = json.loads(args.output.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise SystemExit(f"Could not read catalog at {args.output}: {error}") from error
+
+    state = {"images": {}}
+    if args.resume and IMAGE_STATE_PATH.exists():
+        try:
+            state = json.loads(IMAGE_STATE_PATH.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            pass
+    state.setdefault("images", {})
+    state.setdefault("failures", {})
+    products = catalog.get("products", [])
+    targets = products[: args.limit] if args.limit else products
+    previous_request = [0.0]
+    updated = 0
+
+    for index, product in enumerate(targets, 1):
+        source_url = product.get("sourceUrl", "")
+        if not source_url:
+            continue
+        if args.resume and product.get("images"):
+            cached_images = normalize_product_images(product["images"])
+            if cached_images:
+                product["images"] = cached_images
+                state["images"][source_url] = cached_images
+                continue
+        if args.resume and source_url in state["images"]:
+            stored_images = state["images"][source_url]
+            cached_images = normalize_product_images(stored_images)
+            if not stored_images or cached_images:
+                product["images"] = cached_images
+                continue
+
+        try:
+            raw = fetch_bytes(source_url, robots, args.delay, previous_request)
+        except PermissionError as error:
+            state["failures"][source_url] = str(error)
+            save_image_state(state)
+            updated += 1
+            continue
+        except urllib.error.HTTPError as error:
+            if error.code == 429 or error.code < 400 or error.code >= 500:
+                raise
+            state["failures"][source_url] = f"HTTP {error.code}"
+            save_image_state(state)
+            updated += 1
+            continue
+
+        parser = ProductPageParser()
+        parser.feed(raw.decode("utf-8", "replace"))
+        schema = parser.product_schema()
+        candidates = [
+            parser.meta.get("og:image", ""),
+            *schema_image_candidates(schema),
+            *parser.gallery_images,
+        ]
+        product["images"] = normalize_product_images(candidates)
+        state["images"][source_url] = product["images"]
+        state["failures"].pop(source_url, None)
+        save_image_state(state)
+        updated += 1
+
+        if index % 20 == 0 or index == len(targets):
+            catalog["fetchedAt"] = datetime.now(timezone.utc).isoformat()
+            save_catalog(args.output, catalog)
+            print(
+                f"Image URLs {index}/{len(targets)}; updated {updated}; "
+                f"with images {sum(bool(item.get('images')) for item in targets)}; "
+                f"fetch errors {len(state['failures'])}",
+                flush=True,
+            )
+
+    catalog["fetchedAt"] = datetime.now(timezone.utc).isoformat()
+    save_catalog(args.output, catalog)
+    print(
+        f"Saved image URL references for {len(products)} products to {args.output}; "
+        f"no image files were downloaded; fetch errors: {len(state['failures'])}."
+    )
+
+
 def main() -> None:
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--limit", type=int, help="Import only the first N unique products (for a small test run).")
     cli.add_argument("--delay", type=float, default=0.8, help="Minimum seconds between source-site requests.")
     cli.add_argument("--resume", action="store_true", help="Reuse successful pages from the previous interrupted run.")
+    cli.add_argument(
+        "--images-only",
+        action="store_true",
+        help="Populate product image URL references in the existing catalog without re-importing product data.",
+    )
     cli.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Destination JSON path.")
     args = cli.parse_args()
     if args.delay < 0.5:
@@ -409,6 +588,9 @@ def main() -> None:
     robots = urllib.robotparser.RobotFileParser()
     robots.set_url(f"{BASE}/robots.txt")
     robots.read()
+    if args.images_only:
+        import_images_only(args, robots)
+        return
 
     product_urls, page_urls, category_urls = discover_pages(robots, args.delay)
     if args.limit:

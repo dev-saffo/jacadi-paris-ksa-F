@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CatalogImage } from '@/components/products/CatalogImage';
 import { cn } from '@/lib/utils';
+import { ProductImage } from '@/components/products/ProductImage';
 
 interface ImageGalleryProps {
   images: string[];
@@ -94,7 +95,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
               )}
               aria-label={`View image ${index + 1}`}
             >
-              <img
+              <ProductImage
                 src={image}
                 alt={`${productTitle} thumbnail ${index + 1}`}
                 className="h-full w-full object-cover"

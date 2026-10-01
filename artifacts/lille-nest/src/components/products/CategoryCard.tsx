@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Category } from '@/types/product';
 import { CatalogImage } from '@/components/products/CatalogImage';
 import { cn } from '@/lib/utils';
+import { ProductImage } from '@/components/products/ProductImage';
 
 interface CategoryCardProps {
   category: Category;
