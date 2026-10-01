@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Textarea Component
+ * Shared UI component.
  * Matches input styling exactly — same tokens, same visual language.
  * bg-card / border-input / focus → primary ring (both modes).
  */

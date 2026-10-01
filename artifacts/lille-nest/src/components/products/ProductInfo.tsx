@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Share2, Facebook, Twitter, Link as LinkIcon, Mail } from 'lucide-react';
+import { ArrowUpRight, Heart, Share2, Facebook, Twitter, Link as LinkIcon, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatMoney, isProductOutOfStock } from '@/data/products';
 import { Product } from '@/types/product';
@@ -9,6 +9,12 @@ import { cn } from '@/lib/utils';
 interface ProductInfoProps {
   product: Product;
 }
+
+const catalogText = (value: string) =>
+  new DOMParser()
+    .parseFromString(value, "text/html")
+    .body.textContent?.replace(/\s+/g, " ")
+    .trim() ?? "";
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const isOnSale =
@@ -45,7 +51,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Description */}
       <p className="text-muted-foreground leading-relaxed">
-        {product.description}
+        {catalogText(product.description)}
       </p>
 
       {/* Stock */}
@@ -58,6 +64,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
           )}
         </div>
       )}
+      <a
+        href={product.sourceUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
+      >
+        View product on Jacadi.sa <ArrowUpRight className="h-4 w-4" />
+      </a>
     </div>
   );
 }

@@ -1,424 +1,102 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useCart } from '@/context/CartContext';
-import { CreditCard, Truck, Lock, ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
-import { CatalogImage } from '@/components/products/CatalogImage';
-import { formatMoney } from '@/data/products';
+import { Link } from "react-router-dom";
+import { ArrowUpRight, ShoppingBag } from "lucide-react";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { CartSidebar } from "@/components/cart/CartSidebar";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/CartContext";
+import { formatMoney } from "@/data/products";
 
 const Checkout = () => {
-  const { items, subtotal, clearCart } = useCart();
-  const navigate = useNavigate();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const currency = items[0]?.product.currency ?? 'SAR';
-  
-  const shipping = subtotal >= 50 ? 0 : 5.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
-
-  const [formData, setFormData] = useState({
-    email: '',
-    firstName: '',
-    lastName: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phone: '',
-    shippingMethod: 'standard',
-    paymentMethod: 'card',
-    cardNumber: '',
-    cardName: '',
-    cardExpiry: '',
-    cardCvv: '',
-    saveInfo: false,
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (items.length === 0) {
-      toast.error('Your cart is empty');
-      return;
-    }
-
-    if (!formData.email || !formData.firstName || !formData.lastName || !formData.address) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      clearCart();
-      toast.success('Order placed successfully!', {
-        description: 'You will receive a confirmation email shortly.',
-      });
-      navigate('/');
-      setIsProcessing(false);
-    }, 2000);
-  };
-
-  if (items.length === 0) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 bg-muted/20">
-          <div className="container py-8">
-            <div className="text-center py-8">
-              <span className="text-6xl block mb-4">🛒</span>
-              <h2 className="font-display text-xl font-semibold mb-2">Your cart is empty</h2>
-              <p className="text-muted-foreground mb-6">
-                Add items to your cart before checking out
-              </p>
-              <Button asChild>
-                <Link to="/products">Start Shopping</Link>
-              </Button>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const { items, subtotal } = useCart();
+  const currency = items[0]?.product.currency ?? "SAR";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 bg-muted/20">
-        <div className="container">
-          <Breadcrumbs items={[{ label: 'Cart', href: '/cart' }, { label: 'Checkout' }]} />
-        </div>
+      <main className="container flex-1 py-10 md:py-16">
+        <div className="mx-auto max-w-3xl">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Jacadi Paris
+          </p>
+          <h1 className="font-display text-3xl text-foreground md:text-5xl">
+            Continue on Jacadi
+          </h1>
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
+            This catalogue preview does not place orders or collect personal or
+            payment details. Your shortlist and selected sizes are not transferred
+            to Jacadi.sa. Open each product there to check its current information
+            and ordering options.
+          </p>
 
-        <section className="container py-8">
-          <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="icon" asChild>
-              <Link to="/cart">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <h1 className="font-display text-3xl font-bold">Checkout</h1>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Checkout form */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* Contact Information */}
-                <div className="bg-card rounded p-6 shadow-soft">
-                  <h2 className="font-display text-xl font-bold mb-6">Contact Information</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="your@email.com"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="(555) 123-4567"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Shipping Address */}
-                <div className="bg-card rounded p-6 shadow-soft">
-                  <h2 className="font-display text-xl font-bold mb-6">Shipping Address</h2>
-                  <div className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">First Name *</Label>
-                        <Input
-                          id="firstName"
-                          name="firstName"
-                          required
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Last Name *</Label>
-                        <Input
-                          id="lastName"
-                          name="lastName"
-                          required
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="address">Address *</Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        required
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        placeholder="123 Main St"
-                      />
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div>
-                        <Label htmlFor="city">City *</Label>
-                        <Input
-                          id="city"
-                          name="city"
-                          required
-                          value={formData.city}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="state">State *</Label>
-                        <Input
-                          id="state"
-                          name="state"
-                          required
-                          value={formData.state}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="zipCode">ZIP Code *</Label>
-                        <Input
-                          id="zipCode"
-                          name="zipCode"
-                          required
-                          value={formData.zipCode}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Shipping Method */}
-                <div className="bg-card rounded p-6 shadow-soft">
-                  <h2 className="font-display text-xl font-bold mb-6">Shipping Method</h2>
-                  <RadioGroup
-                    value={formData.shippingMethod}
-                    onValueChange={(value) => setFormData({ ...formData, shippingMethod: value })}
+          {items.length === 0 ? (
+            <section className="mt-10 border border-border bg-card px-6 py-10 text-center">
+              <ShoppingBag className="mx-auto h-8 w-8 text-muted-foreground" />
+              <h2 className="mt-4 font-display text-2xl text-foreground">
+                Your shortlist is empty
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Browse the collection and add products to your shortlist.
+              </p>
+              <Button asChild className="mt-6">
+                <Link to="/products">Browse products</Link>
+              </Button>
+            </section>
+          ) : (
+            <div className="mt-10">
+              <div className="divide-y divide-border border-y border-border">
+                {items.map(({ product, quantity, selectedSize }) => (
+                  <article
+                    key={`${product.id}-${selectedSize ?? "one-size"}`}
+                    className="flex flex-col justify-between gap-4 py-5 sm:flex-row sm:items-center"
                   >
-                    <div className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="standard" id="standard" />
-                        <Label htmlFor="standard" className="cursor-pointer">
-                          <div className="font-semibold">Standard Shipping</div>
-                          <div className="text-sm text-muted-foreground">5-7 business days</div>
-                        </Label>
-                      </div>
-                      <span className="font-semibold">{shipping === 0 ? 'FREE' : `SAR ${shipping.toFixed(2)}`}</span>
+                    <div>
+                      <h2 className="font-display text-xl text-foreground">
+                        {product.title}
+                      </h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Quantity: {quantity}
+                        {selectedSize ? ` · Size: ${selectedSize}` : ""}
+                      </p>
+                      <p className="mt-2 text-sm text-foreground">
+                        {formatMoney(product.price * quantity, product.currency)}
+                      </p>
                     </div>
-                    <div className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="express" id="express" />
-                        <Label htmlFor="express" className="cursor-pointer">
-                          <div className="font-semibold">Express Shipping</div>
-                          <div className="text-sm text-muted-foreground">2-3 business days</div>
-                        </Label>
-                      </div>
-                      <span className="font-semibold">SAR 45.00</span>
-                    </div>
-                    <div className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="overnight" id="overnight" />
-                        <Label htmlFor="overnight" className="cursor-pointer">
-                          <div className="font-semibold">Overnight Shipping</div>
-                          <div className="text-sm text-muted-foreground">Next business day</div>
-                        </Label>
-                      </div>
-                      <span className="font-semibold">SAR 65.00</span>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                {/* Payment Method */}
-                <div className="bg-card rounded p-6 shadow-soft">
-                  <h2 className="font-display text-xl font-bold mb-6">Payment Method</h2>
-                  <RadioGroup
-                    value={formData.paymentMethod}
-                    onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
-                    className="mb-6"
-                  >
-                    <div className="flex items-center gap-3 p-4 border rounded hover:bg-muted/50 transition-colors">
-                      <RadioGroupItem value="card" id="card" />
-                      <Label htmlFor="card" className="cursor-pointer flex items-center gap-2">
-                        <CreditCard className="h-5 w-5" />
-                        Credit / Debit Card
-                      </Label>
-                    </div>
-                  </RadioGroup>
-
-                  {formData.paymentMethod === 'card' && (
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="cardNumber">Card Number *</Label>
-                        <Input
-                          id="cardNumber"
-                          name="cardNumber"
-                          required
-                          value={formData.cardNumber}
-                          onChange={handleInputChange}
-                          placeholder="1234 5678 9012 3456"
-                          maxLength={19}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cardName">Name on Card *</Label>
-                        <Input
-                          id="cardName"
-                          name="cardName"
-                          required
-                          value={formData.cardName}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="cardExpiry">Expiry Date *</Label>
-                          <Input
-                            id="cardExpiry"
-                            name="cardExpiry"
-                            required
-                            value={formData.cardExpiry}
-                            onChange={handleInputChange}
-                            placeholder="MM/YY"
-                            maxLength={5}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="cardCvv">CVV *</Label>
-                          <Input
-                            id="cardCvv"
-                            name="cardCvv"
-                            required
-                            value={formData.cardCvv}
-                            onChange={handleInputChange}
-                            placeholder="123"
-                            maxLength={4}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 mt-6">
-                    <Checkbox
-                      id="saveInfo"
-                      checked={formData.saveInfo}
-                      onCheckedChange={(checked) =>
-                        setFormData({ ...formData, saveInfo: checked as boolean })
-                      }
-                    />
-                    <Label htmlFor="saveInfo" className="cursor-pointer text-sm">
-                      Save this information for next time
-                    </Label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="lg:col-span-1">
-                <div className="bg-card rounded p-6 shadow-soft sticky top-24">
-                  <h2 className="font-display text-xl font-bold mb-6">Order Summary</h2>
-
-                  <div className="space-y-4 mb-6">
-                    {items.map(({ product, quantity, selectedSize }) => (
-                      <div
-                        key={`${product.id}-${selectedSize ?? 'one-size'}`}
-                        className="flex gap-3"
+                    {product.sourceUrl ? (
+                      <a
+                        href={product.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 border border-primary px-4 text-xs font-medium uppercase tracking-wide text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                       >
-                        <CatalogImage
-                          src={product.images[0]}
-                          alt={product.title}
-                          className="h-16 w-16 rounded object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm truncate">{product.title}</p>
-                          <p className="text-sm text-muted-foreground">Qty: {quantity}</p>
-                          {selectedSize && (
-                            <p className="text-xs text-muted-foreground">Size: {selectedSize}</p>
-                          )}
-                          <p className="text-sm font-semibold">
-                            {formatMoney(product.price * quantity, product.currency)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-3 mb-6 pt-6 border-t">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal</span>
-                      <span>{formatMoney(subtotal, currency)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Shipping</span>
-                      <span>{shipping === 0 ? 'FREE' : formatMoney(shipping, currency)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Tax</span>
-                      <span>{formatMoney(tax, currency)}</span>
-                    </div>
-                    <div className="border-t pt-3 flex justify-between">
-                      <span className="font-display font-bold text-lg">Total</span>
-                      <span className="font-display font-bold text-lg">{formatMoney(total, currency)}</span>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? (
-                      'Processing...'
+                        View on Jacadi.sa <ArrowUpRight className="h-4 w-4" />
+                      </a>
                     ) : (
-                      <>
-                        <Lock className="h-4 w-4 mr-2" />
-                        Place Order
-                      </>
+                      <span className="text-xs text-muted-foreground">
+                        Product link unavailable
+                      </span>
                     )}
-                  </Button>
-
-                  <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-                    <Lock className="h-4 w-4" />
-                    <span>Secure checkout</span>
-                  </div>
-                </div>
+                  </article>
+                ))}
               </div>
+
+              <div className="mt-6 flex justify-between border-b border-border pb-5 text-sm">
+                <span>Catalogue subtotal</span>
+                <span className="font-medium">{formatMoney(subtotal, currency)}</span>
+              </div>
+              <p className="mt-4 text-xs leading-5 text-muted-foreground">
+                This subtotal is for reference only; availability, final pricing,
+                delivery, and payment are confirmed by Jacadi.
+              </p>
+              <Button asChild variant="outline" className="mt-7">
+                <Link to="/cart">Back to your shortlist</Link>
+              </Button>
             </div>
-          </form>
-        </section>
+          )}
+        </div>
       </main>
       <Footer />
+      <CartSidebar />
     </div>
   );
 };

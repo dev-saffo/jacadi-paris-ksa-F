@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Input Component
+ * Shared UI component.
  * bg-card   = linen (#F5F1EA light / dark surface dark)
  * border-input = --input token (adapts per mode)
  * focus → ring-primary with reduced opacity

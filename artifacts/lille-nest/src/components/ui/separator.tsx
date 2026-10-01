@@ -4,7 +4,7 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Separator Component
+ * Shared UI component.
  * bg-border/40 — semantic token at reduced opacity for micro-border effect.
  * Adapts automatically in both light and dark modes.
  */

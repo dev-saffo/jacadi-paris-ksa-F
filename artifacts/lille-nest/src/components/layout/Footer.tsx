@@ -1,134 +1,78 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Youtube, Lock, ShieldCheck } from 'lucide-react';
-import { content } from '@/data/content';
-import { categories } from '@/data/products';
-
-const footerLinks = {
-  shop: [
-    { label: 'All Products', href: '/products' },
-    { label: 'Sale', href: '/products?filter=sale' },
-  ],
-  help: [
-    { label: 'Contact Us', href: '/contact' },
-    { label: 'FAQs', href: '/faq' },
-    { label: 'Shipping Policy', href: '/shipping' },
-    { label: 'Returns & Exchanges', href: '/returns' },
-  ],
-  about: [
-    { label: 'Nordic Story', href: '/about' },
-    { label: 'GOTS & OEKO-TEX®', href: '/sustainability' },
-    { label: 'Gift Cards', href: '/gift-cards' },
-    { label: 'Editorial Journal', href: '/blog' },
-    { label: 'Catalog Pages', href: '/pages' },
-  ],
-};
+import { categories, sourcePages } from '@/data/products';
 
 export function Footer() {
-  const { footer } = content;
-  const categoryLinks = categories.slice(0, 4).map((category) => ({
+  const categoryLinks = categories.slice(0, 5).map((category) => ({
     label: category.name,
-    href: `/products?category=${category.slug}`,
+    href: `/products?category=${encodeURIComponent(category.slug)}`,
+  }));
+  const pageGroups = [
+    {
+      heading: 'Jacadi',
+      pages: ['our-story', 'sustainable-elegance', 'jacadi-stores'],
+    },
+    {
+      heading: 'Information',
+      pages: ['customer-service', 'faq', 'shipping', 'returns'],
+    },
+  ].map((group) => ({
+    ...group,
+    links: group.pages
+      .map((slug) => sourcePages.find((page) => page.slug === slug))
+      .filter((page): page is (typeof sourcePages)[number] => Boolean(page)),
   }));
   return (
-    <footer className="bg-muted border-t border-border">
-      <div className="container py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
-          {/* Brand */}
+    <footer className="border-t border-border bg-secondary/60">
+      <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 md:py-16 lg:px-12">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-5 md:gap-12">
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center mb-4">
-              <img 
-                src="/images/stitch/lille-nest-logo.png" 
-                alt="Lille & Nest" 
-                className="h-8 w-auto object-contain"
-              />
+            <Link to="/" className="mb-5 inline-flex flex-col items-center leading-none" aria-label="Jacadi Paris home" data-testid="link-footer-home">
+              <span className="jacadi-wordmark text-[46px] leading-[.74] text-primary">Jacadi</span>
+              <span className="mt-2 text-[8px] tracking-[.44em] text-muted-foreground">PARIS</span>
             </Link>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed font-body">
-              {footer.description}
+            <p className="max-w-[250px] text-sm leading-6 text-muted-foreground">
+              {sourcePages.find((page) => page.slug === 'home')?.description}
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Facebook">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="YouTube">
-                <Youtube className="h-5 w-5" />
-              </a>
-            </div>
           </div>
-
-          {/* Links */}
           <div>
-            <h4 className="font-display font-semibold text-foreground mb-4 text-base">Shop</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.shop.map((link) => (
-                <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[.15em] text-foreground">Collections</h4>
+            <ul className="space-y-3">
+              <li><Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-primary" data-testid="link-footer-all-products">All collections</Link></li>
+              <li><Link to="/pages/outlet" className="text-sm text-accent-foreground transition-colors hover:underline" data-testid="link-footer-outlet">Outlet</Link></li>
             </ul>
           </div>
-
           <div>
-            <h4 className="font-display font-semibold text-foreground mb-4 text-base">Categories</h4>
-            <ul className="space-y-2.5">
+            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[.15em] text-foreground">Categories</h4>
+            <ul className="space-y-3">
               {categoryLinks.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  <Link to={link.href} className="text-sm text-muted-foreground transition-colors hover:text-primary" data-testid={`link-footer-category-${link.label.toLowerCase().replace(/\W+/g, '-')}`}>
                     {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-
-          <div>
-            <h4 className="font-display font-semibold text-foreground mb-4 text-base">Care & Help</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.help.map((link) => (
-                <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
+          {pageGroups.map((group) => (
+            <div key={group.heading}>
+              <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[.15em] text-foreground">{group.heading}</h4>
+              <ul className="space-y-3">
+                {group.links.map((page) => (
+                <li key={page.slug}>
+                  <Link to={`/pages/${page.slug}`} className="text-sm text-muted-foreground transition-colors hover:text-primary" data-testid={`link-footer-page-${page.slug}`}>
+                    {page.title}
                   </Link>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-display font-semibold text-foreground mb-4 text-base">Brand</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.about.map((link) => (
-                <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-
-        {/* Bottom */}
-        <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} <span className="font-semibold text-foreground">{footer.copyright}</span>. All rights reserved.
+        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center">
+          <p className="text-xs tracking-wide text-muted-foreground">
+            © {new Date().getFullYear()} Jacadi Paris
           </p>
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
-            <span className="flex items-center gap-1.5 text-secondary font-medium">
-              <ShieldCheck className="h-4 w-4" />
-              OEKO-TEX® Certified
-            </span>
-            <span className="flex items-center gap-1">
-              <Lock className="h-4 w-4" />
-              Encrypted Checkout
-            </span>
-          </div>
+          <Link to="/pages/privacy-policy" className="text-xs text-muted-foreground transition-colors hover:text-primary" data-testid="link-footer-privacy">Privacy policy</Link>
         </div>
       </div>
     </footer>

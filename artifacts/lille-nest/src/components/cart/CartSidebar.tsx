@@ -119,14 +119,16 @@ export function CartSidebar() {
           <div className="p-4 border-t border-border bg-muted/50">
             <div className="flex items-center justify-between mb-4">
               <span className="text-muted-foreground">Subtotal</span>
-              <span className="font-display font-bold text-xl">SAR {subtotal.toFixed(2)}</span>
+              <span className="font-display font-bold text-xl">
+                {formatMoney(subtotal, items[0]?.product.currency ?? "SAR")}
+              </span>
             </div>
             <p className="text-xs text-muted-foreground mb-4">
-              Shipping and taxes calculated at checkout
+              This shortlist does not reserve items or place an order. Check each item on Jacadi.sa.
             </p>
             <Button className="w-full" size="lg" asChild>
               <Link to="/checkout">
-                Checkout
+                View Jacadi product links
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Label Component
+ * Shared UI component.
  * label-md: Plus Jakarta Sans, 13px, 600 weight, 0.04em tracking.
  */
 const labelVariants = cva(
