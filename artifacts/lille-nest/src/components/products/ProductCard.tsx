@@ -28,7 +28,7 @@ export function ProductCard({
       to={`/products/${product.slug}`}
       data-testid={`card-product-${product.id}`}
       className={cn(
-        "group overflow-hidden rounded-[1.1rem] border border-border/80 bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        "product-card group",
         isList ? "flex gap-4 p-3 sm:gap-6 sm:p-4" : "flex h-full flex-col",
       )}
     >

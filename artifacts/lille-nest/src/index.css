@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Italianno&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Italianno&family=Outfit:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,6 +25,7 @@
     --input: 83 14% 79%;
     --ring: 148 20% 37%;
     --radius: 0.65rem;
+    --radius-card: 1.1rem;
     --font-display: 'Outfit', 'DM Sans', sans-serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mark: 'Italianno', cursive;
@@ -90,21 +91,18 @@
   .jacadi-wordmark { font-family: var(--font-mark); }
   .editorial-rule { height: 1px; background: hsl(var(--border)); }
   .text-link-underline { text-decoration: underline; text-decoration-color: hsl(var(--accent-foreground) / .55); text-underline-offset: 5px; }
-  .collection-tile {
+  .featured-product-image {
     background-color: hsl(var(--secondary));
     background-image: radial-gradient(ellipse at 52% 8%, hsl(var(--background) / .85), transparent 62%);
   }
-  .catalog-card {
-    transition: transform .3s ease, box-shadow .3s ease;
+  .product-card {
+    @apply overflow-hidden rounded-card border border-border/80 bg-card transition-all duration-300;
   }
-  .catalog-card:hover,
-  .catalog-card:focus-visible {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 36px -22px hsl(var(--foreground) / .34);
+  .product-card:hover {
+    @apply -translate-y-1 shadow-lg;
   }
-  .catalog-card:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 4px;
+  .product-card:focus-visible {
+    @apply outline-none ring-2 ring-primary;
   }
   .gallery-control {
     opacity: 1;
@@ -121,7 +119,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .catalog-card:hover,
-  .catalog-card:focus-visible { transform: none; }
+  .product-card:hover { transform: none; }
   .gallery-control { transition: none; }
 }

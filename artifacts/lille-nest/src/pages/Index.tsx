@@ -15,14 +15,14 @@ const editorialPages = editorialSlugs
   .map((slug) => sourcePages.find((page) => page.slug === slug))
   .filter((page): page is (typeof sourcePages)[number] => Boolean(page));
 
-function ProductTile({ product, index }: { product: Product; index: number }) {
+function ProductTile({ product }: { product: Product }) {
   return (
     <Link
       to={`/products/${product.slug}`}
-      className="catalog-card group block"
+      className="product-card group flex h-full flex-col"
       data-testid={`card-product-${product.id}`}
     >
-      <div className="collection-tile relative flex aspect-[.78] items-center justify-center overflow-hidden rounded-[1.15rem]">
+      <div className="featured-product-image relative flex aspect-[.82] items-center justify-center overflow-hidden bg-secondary/50">
         <CatalogImage
           src={product.images[0]}
           alt={product.title}
@@ -35,11 +35,13 @@ function ProductTile({ product, index }: { product: Product; index: number }) {
           <span className="rounded-full bg-background/85 px-3 py-1.5 text-foreground backdrop-blur-sm">{product.categoryName || 'The collection'}</span>
         </span>
       </div>
-      <div className="pt-4">
-        <h3 className="line-clamp-2 min-h-12 font-body text-sm font-medium leading-5 text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="line-clamp-2 font-display text-base font-medium leading-snug text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary sm:text-lg">
           {product.title}
         </h3>
-        <p className="mt-2 text-xs tracking-wide text-muted-foreground">{formatMoney(product.price, product.currency)}</p>
+        <p className="mt-auto pt-4 font-body text-sm font-semibold text-foreground">
+          {formatMoney(product.price, product.currency)}
+        </p>
       </div>
     </Link>
   );
@@ -150,8 +152,8 @@ const Index = () => {
             </div>
             {featuredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-4 sm:gap-x-5">
-                {featuredProducts.slice(0, 4).map((product, index) => (
-                  <ProductTile key={product.id} product={product} index={index} />
+                {featuredProducts.slice(0, 4).map((product) => (
+                  <ProductTile key={product.id} product={product} />
                 ))}
               </div>
             ) : (
