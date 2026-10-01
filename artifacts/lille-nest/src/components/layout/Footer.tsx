@@ -22,9 +22,9 @@ export function Footer() {
       .filter((page): page is (typeof sourcePages)[number] => Boolean(page)),
   }));
   return (
-    <footer id="site-footer" className="border-t border-border bg-secondary/60">
+    <footer id="site-footer" className="border-t border-border bg-secondary/55">
       <div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-16">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 sm:gap-y-10 xl:grid-cols-5 xl:gap-12">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 sm:gap-y-10 xl:grid-cols-[1.5fr_1fr_1.1fr_1fr_1fr] xl:gap-12">
           <div className="min-w-0 sm:col-span-2 xl:col-span-1">
             <Link to="/" className="mb-5 inline-flex w-fit flex-col items-start leading-none" aria-label="Jacadi Paris home" data-testid="link-footer-home">
               <span className="jacadi-wordmark text-[44px] leading-[.74] text-primary">Jacadi</span>

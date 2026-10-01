@@ -3,6 +3,7 @@ import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartSidebar } from '@/components/cart/CartSidebar';
+import { CatalogImage } from '@/components/products/CatalogImage';
 import { categories, formatMoney, getFeaturedProducts, products, sourcePages } from '@/data/products';
 import type { Category, Product } from '@/types/product';
 
@@ -21,15 +22,17 @@ function ProductTile({ product, index }: { product: Product; index: number }) {
       className="catalog-card group block"
       data-testid={`card-product-${product.id}`}
     >
-      <div className={`collection-tile relative flex aspect-[.78] items-center justify-center overflow-hidden ${index % 2 ? 'bg-[#edf1f4]' : 'bg-[#f4f5f6]'}`}>
-        <span className="absolute left-4 top-4 text-[9px] uppercase tracking-[.18em] text-primary/60">
+      <div className="collection-tile relative flex aspect-[.78] items-center justify-center overflow-hidden rounded-[1.15rem]">
+        <CatalogImage
+          src={product.images[0]}
+          alt={product.title}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+        />
+        <span className="absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1.5 text-[9px] uppercase tracking-[.15em] text-primary backdrop-blur-sm sm:left-4 sm:top-4">
           Jacadi Paris
         </span>
-        <div className="flex h-24 w-24 items-center justify-center rounded-full border border-primary/10 bg-background/50 transition-transform duration-500 group-hover:scale-105">
-          <span className="jacadi-wordmark text-5xl leading-none text-primary/70">J</span>
-        </div>
         <span className="absolute bottom-4 right-4 text-[9px] uppercase tracking-[.14em] text-muted-foreground">
-          {product.categoryName || 'The collection'}
+          <span className="rounded-full bg-background/85 px-3 py-1.5 text-foreground backdrop-blur-sm">{product.categoryName || 'The collection'}</span>
         </span>
       </div>
       <div className="pt-4">
@@ -46,13 +49,13 @@ function CollectionLink({ category, index }: { category: Category; index: number
   return (
     <Link
       to={`/products?category=${encodeURIComponent(category.slug)}`}
-      className="group relative flex min-h-[178px] flex-col justify-between overflow-hidden border border-border bg-card p-5 transition-colors hover:bg-secondary sm:min-h-[215px] sm:p-7"
+      className="group relative flex min-h-[178px] flex-col justify-between overflow-hidden rounded-[1.15rem] border border-border/80 bg-card p-5 transition-colors hover:bg-secondary sm:min-h-[215px] sm:p-7"
       data-testid={`card-category-${category.slug}`}
     >
-      <span className="text-[10px] uppercase tracking-[.18em] text-muted-foreground">
+      <span className="relative z-10 text-[10px] uppercase tracking-[.18em] text-muted-foreground">
         {String(index + 1).padStart(2, '0')} / Collection
       </span>
-      <div className="flex items-end justify-between gap-3">
+      <div className="relative z-10 flex items-end justify-between gap-3">
         <div>
           <h3 className="text-2xl text-foreground sm:text-[30px]">{category.name}</h3>
           <p className="mt-2 text-xs tracking-wide text-muted-foreground">
@@ -63,7 +66,8 @@ function CollectionLink({ category, index }: { category: Category; index: number
           <ArrowRight className="h-4 w-4" />
         </span>
       </div>
-      <span className="pointer-events-none absolute -right-3 top-4 font-display text-[112px] leading-none text-primary/[.035]">
+      {category.image && <img src={category.image} alt="" className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[.24] mix-blend-multiply transition-opacity group-hover:opacity-35" />}
+      <span className="pointer-events-none absolute -right-3 top-4 z-10 font-display text-[112px] leading-none text-primary/[.12]">
         {category.name.slice(0, 1)}
       </span>
     </Link>
@@ -91,7 +95,7 @@ const Index = () => {
               <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <Link
                   to="/products"
-                  className="inline-flex min-h-12 items-center gap-5 bg-primary px-6 text-[11px] font-medium uppercase tracking-[.14em] text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="inline-flex min-h-12 items-center gap-5 rounded-full bg-[#f29a7b] px-7 text-[11px] font-semibold uppercase tracking-[.1em] text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#e98768] hover:shadow-md"
                   data-testid="link-shop-all"
                 >
                   Explore collections <ArrowRight className="h-4 w-4" />
@@ -101,19 +105,18 @@ const Index = () => {
                 </Link>
               </div>
             </div>
-            <div className="relative hidden h-[370px] items-center justify-center md:flex">
-              <div className="absolute right-[10%] top-1/2 h-[330px] w-[330px] -translate-y-1/2 rounded-full border border-primary/10" />
-              <div className="absolute right-[16%] top-1/2 h-[270px] w-[270px] -translate-y-1/2 rounded-full border border-primary/[.07]" />
-              <div className="relative flex h-[235px] w-[235px] items-center justify-center rounded-full bg-secondary/75">
-                <div className="flex h-[205px] w-[205px] flex-col items-center justify-center rounded-full border border-primary/15">
-                  <span className="jacadi-wordmark text-[92px] leading-[.74] text-primary">Jacadi</span>
-                  <span className="mt-4 text-[9px] tracking-[.48em] text-muted-foreground">PARIS</span>
-                </div>
+            <div className="relative hidden h-[410px] items-center justify-center md:flex">
+              <div className="absolute right-[6%] top-[8%] h-[350px] w-[78%] rotate-2 rounded-[46%_42%_44%_40%] bg-secondary/85" />
+              <div className="absolute right-[1%] top-[5%] h-[360px] w-[78%] overflow-hidden rounded-[46%_42%_44%_40%] shadow-[0_28px_45px_-32px_hsl(var(--foreground)/.5)]">
+                <CatalogImage src={featuredProducts[0]?.images[0]} alt={featuredProducts[0]?.title ?? 'Jacadi collection'} className="h-full w-full object-cover" />
+              </div>
+              <div className="absolute bottom-2 left-0 w-[47%] overflow-hidden rounded-[45%_42%_40%_48%] border-[7px] border-background shadow-lg">
+                <CatalogImage src={featuredProducts[1]?.images[0]} alt={featuredProducts[1]?.title ?? 'Jacadi collection'} className="aspect-[.88] w-full object-cover" />
               </div>
               <span className="absolute bottom-5 left-10 max-w-[145px] text-[10px] uppercase leading-5 tracking-[.18em] text-muted-foreground">
                 {products.length} products in the Saudi catalogue
               </span>
-              <span className="absolute right-0 top-12 h-2 w-2 rounded-full bg-accent-foreground/60" />
+              <span className="absolute right-0 top-12 h-3 w-3 rounded-full bg-accent" />
             </div>
           </div>
           <div className="absolute -right-28 -top-32 h-[440px] w-[440px] rounded-full border border-primary/[.045] md:right-[5%]" />
@@ -161,7 +164,7 @@ const Index = () => {
             <div className="mt-10 text-center">
               <Link
                 to="/products"
-                className="inline-flex min-h-12 items-center gap-4 border border-primary px-7 text-[11px] font-medium uppercase tracking-[.14em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                className="inline-flex min-h-12 items-center gap-4 rounded-full border border-primary px-7 text-[11px] font-medium uppercase tracking-[.14em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 data-testid="link-browse-products"
               >
                 Browse all products <ArrowRight className="h-4 w-4" />
@@ -186,14 +189,19 @@ const Index = () => {
                 <Link
                   key={page.slug}
                   to={`/pages/${page.slug}`}
-                  className="group flex min-h-[174px] items-center justify-between gap-7 border-y border-border py-7 first:border-t md:px-5"
+                  className="group flex min-h-[174px] items-center justify-between gap-5 rounded-[1.15rem] border border-border/70 bg-card p-4 transition-colors hover:bg-secondary/45 sm:gap-7 sm:p-6"
                   data-testid={`card-editorial-${page.slug}`}
                 >
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="mb-4 text-[9px] uppercase tracking-[.19em] text-muted-foreground">Jacadi · {String(index + 1).padStart(2, '0')}</p>
                     <h3 className="max-w-[420px] text-2xl text-primary transition-colors group-hover:text-foreground sm:text-[30px]">{page.title}</h3>
                     {page.description && <p className="mt-3 line-clamp-2 max-w-[490px] text-sm leading-6 text-muted-foreground">{page.description}</p>}
                   </div>
+                  {page.images[0] && (
+                    <div className="hidden w-[31%] shrink-0 overflow-hidden rounded-[.9rem] sm:block">
+                      <CatalogImage src={page.images[0]} alt="" className="aspect-[1.45] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                    </div>
+                  )}
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-primary transition-transform group-hover:translate-x-1">
                     <ChevronRight className="h-4 w-4" />
                   </span>

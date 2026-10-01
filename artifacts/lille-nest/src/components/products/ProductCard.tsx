@@ -20,7 +20,7 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
       to={`/products/${product.slug}`}
       data-testid={`card-product-${product.id}`}
       className={cn(
-        "group overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        "group overflow-hidden rounded-[1.1rem] border border-border/80 bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         isList ? "flex gap-4 p-3 sm:gap-6 sm:p-4" : "flex h-full flex-col",
       )}
     >
@@ -29,13 +29,13 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
           "relative overflow-hidden bg-muted",
           isList
             ? "aspect-square w-28 flex-none rounded sm:w-40"
-            : "aspect-[4/5] w-full",
+            : "aspect-[.82] w-full",
         )}
       >
         <CatalogImage
           src={product.images[0]}
           alt={product.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.045]"
         />
         {isOnSale && (
           <Badge className="absolute left-3 top-3" variant="sale">
@@ -46,11 +46,11 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
 
       <div className={cn("flex flex-1 flex-col", isList ? "py-1" : "p-4")}>
         {product.categoryName && (
-          <span className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="mb-2 text-[10px] font-semibold uppercase tracking-[.16em] text-primary/75">
             {product.categoryName}
           </span>
         )}
-        <h3 className="line-clamp-2 font-display text-base font-semibold text-foreground transition-colors group-hover:text-primary sm:text-lg">
+        <h3 className="line-clamp-2 font-display text-base font-medium leading-snug text-foreground transition-colors group-hover:text-primary sm:text-lg">
           {product.title}
         </h3>
         {product.sizes.length > 0 && (
@@ -59,7 +59,7 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
           </p>
         )}
         <div className="mt-auto flex flex-wrap items-baseline gap-2 pt-4">
-          <span className="font-display font-bold text-foreground">
+          <span className="font-body text-sm font-semibold text-foreground">
             {formatMoney(product.price, product.currency)}
           </span>
           {isOnSale && product.originalPrice != null && (
