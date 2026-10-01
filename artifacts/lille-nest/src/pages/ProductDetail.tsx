@@ -35,7 +35,7 @@ const ProductDetail = () => {
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <span className="text-6xl block mb-4">😢</span>
+            <span className="jacadi-wordmark mb-4 block text-6xl text-primary">Jacadi</span>
             <h1 className="font-display text-2xl font-bold mb-2">Product Not Found</h1>
             <p className="text-muted-foreground mb-6">
               We couldn't find the product you're looking for.
@@ -80,15 +80,15 @@ const ProductDetail = () => {
         </div>
 
         {/* Product section */}
-        <section className="container py-8">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-8">
+        <section className="container py-5 md:py-8">
+          <div className="grid items-start gap-8 lg:grid-cols-[1.08fr_.92fr] lg:gap-14">
             {/* Image gallery */}
             <div>
               <ImageGallery images={product.images} productTitle={product.title} />
             </div>
 
             {/* Product info */}
-            <div className="space-y-6">
+            <div className="space-y-6 rounded-[1.25rem] border border-border/80 bg-card p-5 sm:p-8 lg:sticky lg:top-28">
               <ProductInfo product={product} />
 
               {/* Size selector (for clothing) */}

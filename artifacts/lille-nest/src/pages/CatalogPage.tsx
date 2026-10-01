@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { sourcePages } from "@/data/products";
 import NotFound from "@/pages/NotFound";
+import { CatalogImage } from "@/components/products/CatalogImage";
 
 const CatalogPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -15,8 +16,9 @@ const CatalogPage = () => {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <header className="border-b border-border bg-muted/30 py-12 md:py-16">
-          <div className="container max-w-4xl">
+        <header className="border-b border-border bg-secondary/45 py-12 md:py-16">
+          <div className="container grid max-w-6xl items-center gap-8 md:grid-cols-[1fr_.72fr]">
+            <div>
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               Catalog page
             </p>
@@ -28,11 +30,17 @@ const CatalogPage = () => {
                 {page.description}
               </p>
             )}
+            </div>
+            {page.images[0] && (
+              <div className="hidden overflow-hidden rounded-[2rem_1.1rem_2rem_1.1rem] shadow-[0_24px_48px_-34px_hsl(var(--foreground)/.5)] md:block">
+                <CatalogImage src={page.images[0]} alt="" className="aspect-[1.2] w-full object-cover" />
+              </div>
+            )}
           </div>
         </header>
 
         <article className="container max-w-4xl py-10 md:py-16">
-          <div className="space-y-5">
+          <div className="space-y-5 rounded-[1.25rem] border border-border/75 bg-card px-6 py-8 sm:px-10 sm:py-12">
             {page.blocks.map((block, index) => {
               const key = `${block.type}-${index}`;
               const type = block.type.toLowerCase();

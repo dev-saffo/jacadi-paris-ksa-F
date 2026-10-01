@@ -23,7 +23,7 @@ export function CartSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed right-0 top-0 h-full w-full max-w-md bg-background border-l border-border z-50 flex flex-col transition-transform duration-300 ease-out",
+        "fixed right-0 top-0 h-full w-full max-w-md rounded-l-[1.35rem] bg-background border-l border-border z-50 flex flex-col transition-transform duration-300 ease-out shadow-2xl",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -42,7 +42,7 @@ export function CartSidebar() {
         <div className="flex-1 overflow-y-auto p-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <span className="text-6xl mb-4">🛒</span>
+              <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-primary"><ShoppingBag className="h-7 w-7" /></span>
               <h3 className="font-display font-semibold text-lg mb-2">Your cart is empty</h3>
               <p className="text-muted-foreground text-sm mb-6">
                 Discover the collection.
