@@ -58,11 +58,12 @@ export function CartSidebar() {
                   key={`${product.id}-${selectedSize ?? "one-size"}`}
                   className="flex gap-4 p-3 bg-muted rounded animate-fade-in"
                 >
-                  <div className="h-20 w-20 rounded bg-card overflow-hidden flex-shrink-0">
+                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded border border-border/50 bg-background/80 p-1.5">
                     <CatalogImage
                       src={product.images[0]}
                       alt={product.title}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
+                      showFallbackLabel={false}
                     />
                   </div>
                   <div className="flex-1 min-w-0">

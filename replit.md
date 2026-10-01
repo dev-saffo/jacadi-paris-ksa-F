@@ -1,9 +1,13 @@
-# [Project name]
+# Jacadi Paris Saudi Catalogue
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A React storefront for browsing the Jacadi Paris Saudi product catalogue, with linked product imagery, collection filters, search, wishlist, and a shortlist/cart flow.
 
 ## Run & Operate
 
+- Install the workspace dependencies with `pnpm install --frozen-lockfile`.
+- Start the storefront preview with the managed `artifacts/lille-nest: web` workflow. It runs `pnpm --filter @workspace/lille-nest run dev` with the artifact's `PORT` and `BASE_PATH` environment.
+- `pnpm --filter @workspace/lille-nest run typecheck` — typecheck the storefront.
+- `pnpm --filter @workspace/lille-nest run test` — run the storefront Vitest suite. Currently blocked at startup because `@testing-library/dom` is missing.
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
