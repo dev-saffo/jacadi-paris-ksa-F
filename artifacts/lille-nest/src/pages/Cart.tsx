@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartSidebar } from '@/components/cart/CartSidebar';
+import { ProductImage } from '@/components/products/ProductImage';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,7 +57,7 @@ const Cart = () => {
                     className="bg-card rounded p-4 shadow-soft flex gap-4"
                   >
                     <Link to={`/product/${product.slug}`} className="flex-shrink-0">
-                      <img
+                      <ProductImage
                         src={product.images[0]}
                         alt={product.title}
                         className="h-24 w-24 md:h-32 md:w-32 rounded object-cover"

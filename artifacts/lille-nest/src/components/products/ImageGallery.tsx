@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ProductImage } from '@/components/products/ProductImage';
 
 interface ImageGalleryProps {
   images: string[];
@@ -24,7 +25,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
     <div className="space-y-4">
       {/* Main image */}
       <div className="relative aspect-square bg-muted rounded overflow-hidden group">
-        <img
+        <ProductImage
           src={images[selectedIndex]}
           alt={`${productTitle} - Image ${selectedIndex + 1}`}
           className={cn(
@@ -90,7 +91,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
               )}
               aria-label={`View image ${index + 1}`}
             >
-              <img
+              <ProductImage
                 src={image}
                 alt={`${productTitle} thumbnail ${index + 1}`}
                 className="h-full w-full object-cover"
