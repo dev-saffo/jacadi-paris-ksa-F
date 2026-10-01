@@ -37,7 +37,7 @@ const Wishlist = () => {
 
           {wishlistItems.length === 0 ? (
             <div className="text-center py-8">
-              <span className="text-6xl block mb-4">💝</span>
+              <span className="jacadi-wordmark mb-4 block text-6xl text-primary">Jacadi</span>
               <h2 className="font-display text-xl font-semibold mb-2">
                 Your wishlist is empty
               </h2>

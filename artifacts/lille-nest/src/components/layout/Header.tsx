@@ -50,9 +50,9 @@ export function Header() {
   }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 shadow-[0_4px_24px_-22px_hsl(var(--foreground)/.5)] backdrop-blur-md">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-7 lg:px-12">
-        <div className="relative flex h-[72px] items-center justify-between sm:h-[80px] lg:h-[92px]">
+        <div className="relative flex h-[68px] items-center justify-between sm:h-[76px] lg:h-[84px]">
           <Button
             variant="ghost"
             size="icon"
@@ -67,7 +67,7 @@ export function Header() {
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           <Link to="/" className="group absolute left-1/2 flex -translate-x-1/2 flex-col items-center leading-none" aria-label="Jacadi Paris home" data-testid="link-brand-home">
-            <span className="jacadi-wordmark text-[39px] leading-[.74] text-primary transition-opacity group-hover:opacity-75 sm:text-[44px] lg:text-[52px]">Jacadi</span>
+            <span className="jacadi-wordmark text-[39px] leading-[.74] text-primary transition-opacity group-hover:opacity-75 sm:text-[44px] lg:text-[49px]">Jacadi</span>
             <span className="mt-2 text-[7px] font-medium tracking-[.44em] text-muted-foreground sm:text-[8px]">PARIS</span>
           </Link>
           <nav className="hidden min-w-0 items-center gap-1 lg:flex" aria-label="Main navigation">
@@ -76,10 +76,10 @@ export function Header() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  'group flex items-center gap-1 px-2.5 py-3 text-[10px] font-medium uppercase tracking-[.09em] transition-colors xl:px-3 xl:text-[11px] xl:tracking-[.105em]',
+                  'group flex items-center gap-1 rounded-full px-3 py-3 text-[10px] font-medium uppercase tracking-[.09em] transition-colors xl:px-3.5 xl:text-[11px] xl:tracking-[.105em]',
                   isActiveLink(link.href)
-                    ? 'text-primary'
-                    : 'text-foreground/75 hover:text-primary',
+                    ? 'bg-secondary/70 text-primary'
+                    : 'text-foreground/75 hover:bg-secondary/60 hover:text-primary',
                   link.sale && 'text-accent-foreground',
                   index === 2 && 'hidden xl:flex',
                 )}

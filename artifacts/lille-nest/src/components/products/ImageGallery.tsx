@@ -40,7 +40,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
         {/* Zoom indicator */}
         {images.length > 0 && (
           <button
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded bg-background/80 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
+            className="gallery-control absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-background/85 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             onClick={() => setIsZoomed(!isZoomed)}
             aria-label="Zoom image"
           >
@@ -54,7 +54,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              className="gallery-control absolute left-2 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full bg-background/85 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               onClick={handlePrevious}
               aria-label="Previous image"
             >
@@ -63,7 +63,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              className="gallery-control absolute right-2 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full bg-background/85 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               onClick={handleNext}
               aria-label="Next image"
             >

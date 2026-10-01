@@ -6,6 +6,7 @@ import { CartSidebar } from "@/components/cart/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { formatMoney } from "@/data/products";
+import { CatalogImage } from "@/components/products/CatalogImage";
 
 const Cart = () => {
   const { items, subtotal, updateQuantity, removeItem } = useCart();
@@ -44,10 +45,10 @@ const Cart = () => {
               {items.map(({ product, quantity, selectedSize }) => (
                 <article
                   key={`${product.id}-${selectedSize ?? "one-size"}`}
-                  className="flex gap-4 border-b border-border py-5"
+                  className="flex gap-4 border-b border-border py-5 sm:gap-6"
                 >
-                  <div className="flex h-28 w-24 shrink-0 items-center justify-center bg-muted text-center text-[10px] uppercase tracking-wide text-muted-foreground">
-                    Jacadi
+                  <div className="h-32 w-28 shrink-0 overflow-hidden rounded-xl bg-secondary sm:h-36 sm:w-32">
+                    <CatalogImage src={product.images[0]} alt={product.title} className="h-full w-full object-cover" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <Link
