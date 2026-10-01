@@ -112,7 +112,7 @@ const Products = () => {
                   <CatalogImage
                     src={cat.image}
                     alt={cat.name}
-                    className="h-8 w-8 object-cover"
+                    className="h-8 w-8 rounded-sm bg-background p-1 object-contain"
                     fallbackClassName="rounded"
                     showFallbackLabel={false}
                   />
@@ -248,8 +248,13 @@ const Products = () => {
                   : "grid-cols-1"
               )}
             >
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} viewMode={viewMode} />
+              {filteredProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  viewMode={viewMode}
+                  imageLoading={index < 4 ? "eager" : "lazy"}
+                />
               ))}
             </div>
           )}

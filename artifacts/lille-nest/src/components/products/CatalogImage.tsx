@@ -1,8 +1,12 @@
 import { ImageOff } from "lucide-react";
-import { useState } from "react";
+import { useState, type ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-interface CatalogImageProps {
+interface CatalogImageProps
+  extends Omit<
+    ImgHTMLAttributes<HTMLImageElement>,
+    "src" | "alt" | "className" | "onError"
+  > {
   src?: string;
   alt: string;
   className?: string;
@@ -16,15 +20,21 @@ export function CatalogImage({
   className,
   fallbackClassName,
   showFallbackLabel = true,
+  loading = "lazy",
+  decoding = "async",
+  ...imageProps
 }: CatalogImageProps) {
   const [failedSource, setFailedSource] = useState<string | null>(null);
 
   if (src && failedSource !== src) {
     return (
       <img
+        {...imageProps}
         src={src}
         alt={alt}
         className={className}
+        loading={loading}
+        decoding={decoding}
         onError={() => setFailedSource(src)}
       />
     );

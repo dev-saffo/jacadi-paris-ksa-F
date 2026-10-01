@@ -4,16 +4,24 @@ import { CatalogImage } from "@/components/products/CatalogImage";
 import { formatMoney, isProductOutOfStock } from "@/data/products";
 import { Product } from "@/types/product";
 import { cn } from "@/lib/utils";
+import type { ImgHTMLAttributes } from "react";
 
 interface ProductCardProps {
   product: Product;
   viewMode?: "grid" | "list";
+  imageLoading?: ImgHTMLAttributes<HTMLImageElement>["loading"];
 }
 
-export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
+export function ProductCard({
+  product,
+  viewMode = "grid",
+  imageLoading = "lazy",
+}: ProductCardProps) {
   const isList = viewMode === "list";
   const isOnSale =
     product.originalPrice != null && product.originalPrice > product.price;
+  const productImages = product.images.filter(Boolean);
+  const alternateImage = productImages[1];
 
   return (
     <Link
@@ -26,19 +34,39 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
     >
       <div
         className={cn(
-          "relative overflow-hidden bg-muted",
+          "relative overflow-hidden bg-secondary/50",
           isList
             ? "aspect-square w-28 flex-none rounded sm:w-40"
             : "aspect-[4/5] w-full",
         )}
       >
         <CatalogImage
-          src={product.images[0]}
+          src={productImages[0]}
           alt={product.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          loading={imageLoading}
+          className={cn(
+            "h-full w-full object-contain p-2 transition-all duration-300 sm:p-3",
+            alternateImage && "group-hover:opacity-0 group-focus-visible:opacity-0",
+          )}
         />
+        {alternateImage && (
+          <CatalogImage
+            src={alternateImage}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 h-full w-full object-contain p-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 sm:p-3"
+          />
+        )}
+        {productImages.length > 1 && (
+          <span
+            className="absolute bottom-3 left-3 rounded-full border border-white/80 bg-background/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-foreground shadow-sm backdrop-blur-sm"
+            data-testid={`text-product-image-count-${product.id}`}
+          >
+            {productImages.length} photos
+          </span>
+        )}
         {isOnSale && (
-          <Badge className="absolute left-3 top-3" variant="sale">
+          <Badge className="absolute right-3 top-3" variant="sale">
             Sale
           </Badge>
         )}
