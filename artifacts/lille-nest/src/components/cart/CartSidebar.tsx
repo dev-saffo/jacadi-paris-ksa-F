@@ -1,5 +1,6 @@
 import { X, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProductImage } from '@/components/products/ProductImage';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -57,7 +58,7 @@ export function CartSidebar() {
                   className="flex gap-4 p-3 bg-muted rounded animate-fade-in"
                 >
                   <div className="h-20 w-20 rounded bg-card overflow-hidden flex-shrink-0">
-                    <img
+                    <ProductImage
                       src={product.images[0]}
                       alt={product.title}
                       className="h-full w-full object-cover"

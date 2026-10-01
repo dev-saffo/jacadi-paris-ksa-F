@@ -10,7 +10,8 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
-- `python artifacts/lille-nest/scripts/import-jacadi-catalog.py --resume` — refresh the authorized English product catalog and public page text in `artifacts/lille-nest/src/data/jacadi-catalog.json`. The importer checks `robots.txt`, waits at least 0.8 seconds between requests, and does not collect or download images. Use `--resume` to continue after an interrupted run.
+- `python artifacts/lille-nest/scripts/import-jacadi-catalog.py --resume` — refresh the English product catalog and public page text in `artifacts/lille-nest/src/data/jacadi-catalog.json`. The importer checks `robots.txt`, waits at least 0.8 seconds between requests, and records public product image URLs without downloading image files. Use `--resume` to continue after an interrupted run.
+- `python artifacts/lille-nest/scripts/import-jacadi-catalog.py --images-only --resume` — populate or resume product image URL references in the existing catalog without re-importing product data. Image bytes remain hosted by Jacadi.
 
 ## Stack
 

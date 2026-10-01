@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { ProductImage } from '@/components/products/ProductImage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -348,7 +349,7 @@ const Checkout = () => {
                   <div className="space-y-4 mb-6">
                     {items.map(({ product, quantity }) => (
                       <div key={product.id} className="flex gap-3">
-                        <img
+                        <ProductImage
                           src={product.images[0]}
                           alt={product.title}
                           className="h-16 w-16 rounded object-cover"

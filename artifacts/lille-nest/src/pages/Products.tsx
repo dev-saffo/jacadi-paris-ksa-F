@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartSidebar } from '@/components/cart/CartSidebar';
 import { ProductCard } from '@/components/products/ProductCard';
+import { ProductImage } from '@/components/products/ProductImage';
 import { products, categories } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal, Grid3X3, List, ChevronDown, SearchX } from 'lucide-react';
@@ -98,7 +99,7 @@ const Products = () => {
                 className="flex items-center justify-between gap-4 h-auto py-3 px-4 min-w-[200px]"
               >
                 <div className="flex items-center gap-2">
-                  <img 
+                  <ProductImage
                     src={cat.image} 
                     alt={cat.name}
                     className="w-8 h-8 object-contain"
