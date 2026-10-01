@@ -94,12 +94,34 @@
     background-color: hsl(var(--secondary));
     background-image: radial-gradient(ellipse at 52% 8%, hsl(var(--background) / .85), transparent 62%);
   }
-  .catalog-card { transition: transform .25s ease, box-shadow .25s ease; }
-  .catalog-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -22px hsl(var(--foreground) / .34); }
+  .catalog-card {
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .catalog-card:hover,
+  .catalog-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px -22px hsl(var(--foreground) / .34);
+  }
+  .catalog-card:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 4px;
+  }
+  .gallery-control {
+    opacity: 1;
+    transition: opacity .2s ease;
+  }
+  @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+    .gallery-control { opacity: 0; }
+    .group:hover .gallery-control,
+    .group:focus-within .gallery-control { opacity: 1; }
+  }
 }
 
 ::selection { background: hsl(var(--accent)); color: hsl(var(--foreground)); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .catalog-card:hover,
+  .catalog-card:focus-visible { transform: none; }
+  .gallery-control { transition: none; }
 }

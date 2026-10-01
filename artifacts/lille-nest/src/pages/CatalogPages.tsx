@@ -33,10 +33,10 @@ const CatalogPages = () => (
             >
               {page.images[0] && (
                 <div className="-mx-6 -mt-6 mb-5 overflow-hidden rounded-t-[1.05rem]">
-                  <CatalogImage src={page.images[0]} alt="" className="aspect-[1.65] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                  <CatalogImage src={page.images[0]} alt="" className="aspect-[1.65] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]" />
                 </div>
               )}
-              <h2 className="font-display text-xl font-medium text-foreground group-hover:text-primary">
+              <h2 className="font-display text-xl font-medium text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
                 {page.title}
               </h2>
               {page.description && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{page.description}</p>}

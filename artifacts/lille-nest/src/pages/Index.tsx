@@ -26,7 +26,7 @@ function ProductTile({ product, index }: { product: Product; index: number }) {
         <CatalogImage
           src={product.images[0]}
           alt={product.title}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
         />
         <span className="absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1.5 text-[9px] uppercase tracking-[.15em] text-primary backdrop-blur-sm sm:left-4 sm:top-4">
           Jacadi Paris
@@ -36,7 +36,7 @@ function ProductTile({ product, index }: { product: Product; index: number }) {
         </span>
       </div>
       <div className="pt-4">
-        <h3 className="line-clamp-2 min-h-12 font-body text-sm font-medium leading-5 text-foreground transition-colors group-hover:text-primary">
+        <h3 className="line-clamp-2 min-h-12 font-body text-sm font-medium leading-5 text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
           {product.title}
         </h3>
         <p className="mt-2 text-xs tracking-wide text-muted-foreground">{formatMoney(product.price, product.currency)}</p>
@@ -49,7 +49,7 @@ function CollectionLink({ category, index }: { category: Category; index: number
   return (
     <Link
       to={`/products?category=${encodeURIComponent(category.slug)}`}
-      className="group relative flex min-h-[178px] flex-col justify-between overflow-hidden rounded-[1.15rem] border border-border/80 bg-card p-5 transition-colors hover:bg-secondary sm:min-h-[215px] sm:p-7"
+      className="group relative flex min-h-[178px] flex-col justify-between overflow-hidden rounded-[1.15rem] border border-border/80 bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:bg-secondary hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:min-h-[215px] sm:p-7"
       data-testid={`card-category-${category.slug}`}
     >
       <span className="relative z-10 text-[10px] uppercase tracking-[.18em] text-muted-foreground">
@@ -62,11 +62,11 @@ function CollectionLink({ category, index }: { category: Category; index: number
             {category.productCount} pieces
           </p>
         </div>
-        <span className="mb-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-primary transition-transform group-hover:translate-x-1">
+        <span className="mb-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-primary transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1">
           <ArrowRight className="h-4 w-4" />
         </span>
       </div>
-      {category.image && <img src={category.image} alt="" className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[.24] mix-blend-multiply transition-opacity group-hover:opacity-35" />}
+      {category.image && <img src={category.image} alt="" className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[.24] mix-blend-multiply transition-opacity group-hover:opacity-35 group-focus-visible:opacity-35" />}
       <span className="pointer-events-none absolute -right-3 top-4 z-10 font-display text-[112px] leading-none text-primary/[.12]">
         {category.name.slice(0, 1)}
       </span>
@@ -189,20 +189,20 @@ const Index = () => {
                 <Link
                   key={page.slug}
                   to={`/pages/${page.slug}`}
-                  className="group flex min-h-[174px] items-center justify-between gap-5 rounded-[1.15rem] border border-border/70 bg-card p-4 transition-colors hover:bg-secondary/45 sm:gap-7 sm:p-6"
+                  className="group flex min-h-[174px] items-center justify-between gap-5 rounded-[1.15rem] border border-border/70 bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-secondary/45 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:gap-7 sm:p-6"
                   data-testid={`card-editorial-${page.slug}`}
                 >
                   <div className="min-w-0 flex-1">
                     <p className="mb-4 text-[9px] uppercase tracking-[.19em] text-muted-foreground">Jacadi · {String(index + 1).padStart(2, '0')}</p>
-                    <h3 className="max-w-[420px] text-2xl text-primary transition-colors group-hover:text-foreground sm:text-[30px]">{page.title}</h3>
+                    <h3 className="max-w-[420px] text-2xl text-primary transition-colors group-hover:text-foreground group-focus-visible:text-foreground sm:text-[30px]">{page.title}</h3>
                     {page.description && <p className="mt-3 line-clamp-2 max-w-[490px] text-sm leading-6 text-muted-foreground">{page.description}</p>}
                   </div>
                   {page.images[0] && (
                     <div className="hidden w-[31%] shrink-0 overflow-hidden rounded-[.9rem] sm:block">
-                      <CatalogImage src={page.images[0]} alt="" className="aspect-[1.45] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                      <CatalogImage src={page.images[0]} alt="" className="aspect-[1.45] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]" />
                     </div>
                   )}
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-primary transition-transform group-hover:translate-x-1">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-primary transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1">
                     <ChevronRight className="h-4 w-4" />
                   </span>
                 </Link>

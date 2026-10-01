@@ -50,7 +50,7 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
             {product.categoryName}
           </span>
         )}
-        <h3 className="line-clamp-2 font-display text-base font-medium leading-snug text-foreground transition-colors group-hover:text-primary sm:text-lg">
+        <h3 className="line-clamp-2 font-display text-base font-medium leading-snug text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary sm:text-lg">
           {product.title}
         </h3>
         {product.sizes.length > 0 && (
