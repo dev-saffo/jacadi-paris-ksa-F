@@ -15,8 +15,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Newsreader', 'Georgia', 'serif'],
-        body: ['Plus Jakarta Sans', 'sans-serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
+        body: ['DM Sans', 'sans-serif'],
+        mark: ['Italianno', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",

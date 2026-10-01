@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Star, Heart, Share2, Truck, RotateCcw, Shield, Leaf, Facebook, Twitter, Link as LinkIcon, Mail } from 'lucide-react';
+import { ArrowUpRight, Heart, Share2, Facebook, Twitter, Link as LinkIcon, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { formatMoney, isProductOutOfStock } from '@/data/products';
 import { Product } from '@/types/product';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -9,28 +10,26 @@ interface ProductInfoProps {
   product: Product;
 }
 
-function getAgeBadgeVariant(ageRange: { min: number; max: number }) {
-  if (ageRange.max <= 2) return 'baby';
-  if (ageRange.max <= 4) return 'toddler';
-  if (ageRange.max <= 8) return 'kids';
-  return 'tweens';
-}
+const catalogText = (value: string) =>
+  new DOMParser()
+    .parseFromString(value, "text/html")
+    .body.textContent?.replace(/\s+/g, " ")
+    .trim() ?? "";
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const discountPercent = product.originalPrice
+  const isOnSale =
+    product.originalPrice != null && product.originalPrice > product.price;
+  const discountPercent = isOnSale && product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
+  const outOfStock = isProductOutOfStock(product);
 
   return (
     <div className="space-y-4">
       {/* Badges */}
       <div className="flex flex-wrap gap-2">
-        {product.isNew && <Badge variant="new">New Arrival</Badge>}
-        {product.isBestseller && <Badge variant="bestseller">Bestseller</Badge>}
+        {product.categoryName && <Badge variant="secondary">{product.categoryName}</Badge>}
         {discountPercent > 0 && <Badge variant="sale">{discountPercent}% Off</Badge>}
-        <Badge variant={getAgeBadgeVariant(product.ageRange)}>
-          Ages {product.ageRange.min}-{product.ageRange.max}
-        </Badge>
       </div>
 
       {/* Title */}
@@ -38,86 +37,41 @@ export function ProductInfo({ product }: ProductInfoProps) {
         {product.title}
       </h1>
 
-      {/* Rating */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={`h-4 w-4 ${
-                i < Math.floor(product.rating)
-                  ? 'fill-category-toys text-category-toys'
-                  : 'text-muted-foreground'
-              }`}
-            />
-          ))}
-        </div>
-        <span className="font-semibold">{product.rating}</span>
-        <span className="text-muted-foreground">({product.reviewCount} reviews)</span>
-      </div>
-
       {/* Price */}
       <div className="flex items-baseline gap-3">
         <span className="font-display text-3xl font-bold text-foreground">
-          SAR {product.price.toFixed(2)}
+          {formatMoney(product.price, product.currency)}
         </span>
-        {product.originalPrice && (
+        {isOnSale && product.originalPrice != null && (
           <span className="text-xl text-muted-foreground line-through">
-            SAR {product.originalPrice.toFixed(2)}
+            {formatMoney(product.originalPrice, product.currency)}
           </span>
         )}
       </div>
 
       {/* Description */}
       <p className="text-muted-foreground leading-relaxed">
-        {product.description}
+        {catalogText(product.description)}
       </p>
 
-      {/* Features */}
-      {product.badges && product.badges.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {product.badges.map((badge) => (
-            <Badge key={badge} variant="eco" className="gap-1">
-              <Leaf className="h-3 w-3" />
-              {badge}
-            </Badge>
-          ))}
+      {/* Stock */}
+      {product.availability && (
+        <div className="text-sm">
+          {outOfStock ? (
+            <span className="font-medium text-destructive">Out of stock</span>
+          ) : (
+            <span className="font-medium text-secondary">In stock</span>
+          )}
         </div>
       )}
-
-      {/* Stock */}
-      <div className="text-sm">
-        {product.stock > 10 ? (
-          <span className="text-secondary font-medium">✓ In Stock</span>
-        ) : product.stock > 0 ? (
-          <span className="text-primary font-medium">Only {product.stock} left!</span>
-        ) : (
-          <span className="text-destructive font-medium">Out of Stock</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export function ProductBenefits() {
-  return (
-    <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded">
-      <div className="flex items-center gap-2 text-sm">
-        <Truck className="h-4 w-4 text-primary" />
-        <span>Free shipping over SAR 300</span>
-      </div>
-      <div className="flex items-center gap-2 text-sm">
-        <RotateCcw className="h-4 w-4 text-primary" />
-        <span>30-day easy returns</span>
-      </div>
-      <div className="flex items-center gap-2 text-sm">
-        <Shield className="h-4 w-4 text-primary" />
-        <span>Safety tested</span>
-      </div>
-      <div className="flex items-center gap-2 text-sm">
-        <Leaf className="h-4 w-4 text-primary" />
-        <span>Eco-friendly</span>
-      </div>
+      <a
+        href={product.sourceUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
+      >
+        View product on Jacadi.sa <ArrowUpRight className="h-4 w-4" />
+      </a>
     </div>
   );
 }

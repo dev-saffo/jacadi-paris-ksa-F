@@ -1,99 +1,105 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Heart, Search, Menu, X, User } from 'lucide-react';
+import { ShoppingBag, Heart, Search, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-const navLinks = [
-  { label: 'Shop All', href: '/products' },
-  { label: 'New Arrivals', href: '/products?filter=new' },
-  { label: 'Toys', href: '/products?category=toys' },
-  { label: 'Clothing', href: '/products?category=clothes' },
-  { label: 'Books', href: '/products?category=books' },
-  { label: 'Sale', href: '/products?filter=sale' },
-];
+import { categories } from '@/data/products';
 
 export function Header() {
   const { itemCount, toggleCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
+  const navLinks: { label: string; href: string; sale?: boolean }[] = [
+    { label: 'Collections', href: '/products' },
+    ...categories.slice(0, 2).map((category) => ({
+      label:
+        category.slug === 'jumpers-sweatshirts-and-cardigans'
+          ? 'Jumpers & cardigans'
+          : category.slug === 'bloomers-and-overalls'
+            ? 'Bloomers & overalls'
+            : category.name,
+      href: `/products?category=${category.slug}`,
+    })),
+    { label: 'Outlet', href: '/pages/outlet', sale: true },
+  ];
 
   const isActiveLink = (href: string) => {
     const currentPath = location.pathname + location.search;
-    return currentPath === href || (href !== '/products' && currentPath.startsWith(href));
+    return currentPath === href || (href === '/products' ? location.pathname === '/products' : currentPath.startsWith(href));
   };
 
-  return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="container">
-        {/* Top bar - Infinite scrolling announcement */}
-        <div className="hidden md:block relative overflow-hidden py-2 text-sm text-muted-foreground">
-          <div className="flex animate-scroll whitespace-nowrap">
-            <span className="inline-block px-4">✨ Free shipping on orders over $50 • Easy 30-day returns</span>
-            <span className="inline-block px-4">✨ Free shipping on orders over $50 • Easy 30-day returns</span>
-            <span className="inline-block px-4">✨ Free shipping on orders over $50 • Easy 30-day returns</span>
-            <span className="inline-block px-4">✨ Free shipping on orders over $50 • Easy 30-day returns</span>
-          </div>
-        </div>
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname, location.search]);
 
-        {/* Main header */}
-        <div className="flex items-center justify-between h-14 md:h-20">
-          {/* Mobile menu button */}
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [mobileMenuOpen]);
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-7 lg:px-12">
+        <div className="relative flex h-[72px] items-center justify-between sm:h-[80px] lg:h-[92px]">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden h-9 w-9 -ml-2"
+            className="h-9 w-9 shrink-0 lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            ref={menuButtonRef}
+            data-testid="button-toggle-menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-
-          {/* Logo */}
-          <Link to="/" className="flex items-center -ml-2 md:ml-0">
-            <img 
-              src="/images/stitch/lille-nest-logo.png" 
-              alt="Lille & Nest" 
-              className="h-8 md:h-10 w-auto object-contain"
-            />
+          <Link to="/" className="group absolute left-1/2 flex -translate-x-1/2 flex-col items-center leading-none" aria-label="Jacadi Paris home" data-testid="link-brand-home">
+            <span className="jacadi-wordmark text-[39px] leading-[.74] text-primary transition-opacity group-hover:opacity-75 sm:text-[44px] lg:text-[52px]">Jacadi</span>
+            <span className="mt-2 text-[7px] font-medium tracking-[.44em] text-muted-foreground sm:text-[8px]">PARIS</span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
+          <nav className="hidden min-w-0 items-center gap-1 lg:flex" aria-label="Main navigation">
+            {navLinks.map((link, index) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors rounded",
+                  'group flex items-center gap-1 px-2.5 py-3 text-[10px] font-medium uppercase tracking-[.09em] transition-colors xl:px-3 xl:text-[11px] xl:tracking-[.105em]',
                   isActiveLink(link.href)
-                    ? "text-primary bg-primary/10 font-semibold"
-                    : "text-foreground/80 hover:text-primary hover:bg-muted"
+                    ? 'text-primary'
+                    : 'text-foreground/75 hover:text-primary',
+                  link.sale && 'text-accent-foreground',
+                  index === 2 && 'hidden xl:flex',
                 )}
+                aria-current={isActiveLink(link.href) ? 'page' : undefined}
+                data-testid={`link-nav-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-
-          {/* Actions */}
           <div className="flex items-center gap-0.5 md:gap-1">
-            <Button variant="ghost" size="icon" className="h-9 w-9" asChild aria-label="Search">
+            <Button variant="ghost" size="icon" className="h-9 w-9" asChild aria-label="Search" data-testid="button-search">
               <Link to="/search">
                 <Search className="h-5 w-5" />
               </Link>
             </Button>
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="hidden sm:flex h-9 w-9" asChild aria-label="Wishlist">
+            <Button variant="ghost" size="icon" className="hidden h-9 w-9 sm:flex" asChild aria-label="Wishlist" data-testid="button-wishlist">
               <Link to="/wishlist">
                 <Heart className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" className="hidden sm:flex h-9 w-9" asChild aria-label="Account">
-              <Link to="/profile">
-                <User className="h-5 w-5" />
               </Link>
             </Button>
             <Button
@@ -102,36 +108,42 @@ export function Header() {
               className="relative h-9 w-9"
               onClick={toggleCart}
               aria-label={`Shopping cart with ${itemCount} items`}
+              data-testid="button-open-cart"
             >
               <ShoppingBag className="h-5 w-5" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center animate-bounce-in">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                   {itemCount}
                 </span>
               )}
             </Button>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
         <nav
+          id="mobile-navigation"
           className={cn(
-            "md:hidden overflow-hidden transition-all duration-300",
-            mobileMenuOpen ? "max-h-96 pb-4" : "max-h-0"
+            'overflow-hidden transition-[max-height,padding] duration-300 lg:hidden',
+            mobileMenuOpen ? 'max-h-[420px] pb-4' : 'max-h-0',
           )}
+          aria-label="Mobile navigation"
+          aria-hidden={!mobileMenuOpen}
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col border-t border-border pt-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-3 text-base font-medium transition-colors rounded",
+                  'px-3 py-3 text-sm font-medium tracking-wide transition-colors',
                   isActiveLink(link.href)
-                    ? "text-primary bg-primary/10 font-semibold"
-                    : "text-foreground/80 hover:text-primary hover:bg-muted"
+                    ? 'text-primary'
+                    : 'text-foreground/80 hover:text-primary',
+                  link.sale && 'text-accent-foreground',
                 )}
+                aria-current={isActiveLink(link.href) ? 'page' : undefined}
+                tabIndex={mobileMenuOpen ? 0 : -1}
                 onClick={() => setMobileMenuOpen(false)}
+                data-testid={`link-mobile-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {link.label}
               </Link>

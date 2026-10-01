@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CatalogImage } from '@/components/products/CatalogImage';
 import { cn } from '@/lib/utils';
 import { ProductImage } from '@/components/products/ProductImage';
 
@@ -12,6 +13,8 @@ interface ImageGalleryProps {
 export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const currentIndex = images.length === 0 ? 0 : selectedIndex % images.length;
+  const selectedImage = images[currentIndex];
 
   const handlePrevious = () => {
     setSelectedIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -25,24 +28,25 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
     <div className="space-y-4">
       {/* Main image */}
       <div className="relative aspect-square bg-muted rounded overflow-hidden group">
-        <ProductImage
-          src={images[selectedIndex]}
-          alt={`${productTitle} - Image ${selectedIndex + 1}`}
+        <CatalogImage
+          src={selectedImage}
+          alt={`${productTitle} - Image ${currentIndex + 1}`}
           className={cn(
             "h-full w-full object-cover transition-transform duration-500",
-            isZoomed && "scale-150 cursor-zoom-out"
+            selectedImage && isZoomed && "scale-150 cursor-zoom-out",
           )}
-          onClick={() => setIsZoomed(!isZoomed)}
         />
 
         {/* Zoom indicator */}
-        <button
-          className="absolute top-4 right-4 h-10 w-10 rounded bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={() => setIsZoomed(!isZoomed)}
-          aria-label="Zoom image"
-        >
-          <ZoomIn className="h-5 w-5" />
-        </button>
+        {images.length > 0 && (
+          <button
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded bg-background/80 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
+            onClick={() => setIsZoomed(!isZoomed)}
+            aria-label="Zoom image"
+          >
+            <ZoomIn className="h-5 w-5" />
+          </button>
+        )}
 
         {/* Navigation arrows */}
         {images.length > 1 && (
@@ -71,7 +75,7 @@ export function ImageGallery({ images, productTitle }: ImageGalleryProps) {
         {/* Image counter */}
         {images.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded bg-background/80 backdrop-blur-sm text-sm font-medium">
-            {selectedIndex + 1} / {images.length}
+            {currentIndex + 1} / {images.length}
           </div>
         )}
       </div>

@@ -1,107 +1,79 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
-import type { Product } from "@/types/product";
-import { useCart } from "@/context/CartContext";
+import { Badge } from "@/components/ui/badge";
+import { CatalogImage } from "@/components/products/CatalogImage";
+import { formatMoney, isProductOutOfStock } from "@/data/products";
+import { Product } from "@/types/product";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ProductImage } from "@/components/products/ProductImage";
 
 interface ProductCardProps {
   product: Product;
-  className?: string;
   viewMode?: "grid" | "list";
 }
 
+export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
+  const isList = viewMode === "list";
+  const isOnSale =
+    product.originalPrice != null && product.originalPrice > product.price;
 
-export function ProductCard({
-  product,
-  className,
-  viewMode = "grid",
-}: ProductCardProps) {
-  const { addItem } = useCart();
-  const category = product.categoryName ?? product.categories[0] ?? "Children";
-  const productLink = `/products/${product.slug}`;
-  const available = !product.availability || product.availability === "InStock";
+  return (
+    <Link
+      to={`/products/${product.slug}`}
+      data-testid={`card-product-${product.id}`}
+      className={cn(
+        "group overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        isList ? "flex gap-4 p-3 sm:gap-6 sm:p-4" : "flex h-full flex-col",
+      )}
+    >
+      <div
+        className={cn(
+          "relative overflow-hidden bg-muted",
+          isList
+            ? "aspect-square w-28 flex-none rounded sm:w-40"
+            : "aspect-[4/5] w-full",
+        )}
+      >
+        <CatalogImage
+          src={product.images[0]}
+          alt={product.title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+        {isOnSale && (
+          <Badge className="absolute left-3 top-3" variant="sale">
+            Sale
+          </Badge>
+        )}
+      </div>
 
-  const image = (
-    <ProductImage
-      src={product.images[0]}
-      alt={product.title}
-      loading="lazy"
-      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-    />
-  );
-
-  const details = (
-    <div className="flex min-w-0 flex-1 flex-col p-4">
-      <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">
-        {category}
-      </p>
-      <Link to={productLink} className="group/title">
-        <h3 className="mb-2 line-clamp-2 font-display font-semibold text-foreground transition-colors group-hover/title:text-primary">
+      <div className={cn("flex flex-1 flex-col", isList ? "py-1" : "p-4")}>
+        {product.categoryName && (
+          <span className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {product.categoryName}
+          </span>
+        )}
+        <h3 className="line-clamp-2 font-display text-base font-semibold text-foreground transition-colors group-hover:text-primary sm:text-lg">
           {product.title}
         </h3>
-      </Link>
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-3">
-        <div className="flex items-baseline gap-2">
-          <span className="font-display text-lg font-bold text-foreground">
-            {product.currency} {product.price.toFixed(2)}
+        {product.sizes.length > 0 && (
+          <p className="mt-2 line-clamp-1 text-xs text-muted-foreground">
+            Sizes: {product.sizes.join(", ")}
+          </p>
+        )}
+        <div className="mt-auto flex flex-wrap items-baseline gap-2 pt-4">
+          <span className="font-display font-bold text-foreground">
+            {formatMoney(product.price, product.currency)}
           </span>
-          {product.originalPrice != null && (
+          {isOnSale && product.originalPrice != null && (
             <span className="text-sm text-muted-foreground line-through">
-              {product.currency} {product.originalPrice.toFixed(2)}
+              {formatMoney(product.originalPrice, product.currency)}
             </span>
           )}
         </div>
-        <Button
-          size="sm"
-          onClick={() => addItem(product)}
-          disabled={!available}
-          aria-label={`Add ${product.title} to cart`}
-          className="gap-2"
-        >
-          <ShoppingBag className="h-4 w-4" />
-          {available ? "Add to cart" : "Unavailable"}
-        </Button>
-      </div>
-    </div>
-  );
-
-  if (viewMode === "list") {
-    return (
-      <article
-        className={cn(
-          "group flex flex-col overflow-hidden rounded bg-card shadow-soft transition-shadow hover:shadow-card sm:flex-row",
-          className,
+        {isProductOutOfStock(product) && (
+          <span className="mt-2 text-xs font-medium text-destructive">
+            Out of stock
+          </span>
         )}
-      >
-        <Link
-          to={productLink}
-          className="relative block aspect-square shrink-0 overflow-hidden bg-muted sm:w-52"
-          aria-label={`View ${product.title}`}
-        >
-          {image}
-        </Link>
-        {details}
-      </article>
-    );
-  }
-
-  return (
-    <article
-      className={cn(
-        "group overflow-hidden rounded bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-card",
-        className,
-      )}
-    >
-      <Link
-        to={productLink}
-        className="block aspect-square overflow-hidden bg-muted"
-        aria-label={`View ${product.title}`}
-      >
-        {image}
-      </Link>
-      {details}
-    </article>
+      </div>
+    </Link>
   );
 }

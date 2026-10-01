@@ -1,300 +1,98 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Italianno&family=Playfair+Display:wght@400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Stitch Nordic Slumber & Nest Palette */
-    --background: 40 33% 97%;      /* Canvas Cream #FBF9F5 */
-    --foreground: 24 8% 16%;       /* Charcoal Slate #2D2926 */
-
-    --card: 38 27% 94%;            /* Soft Linen #F5F1EA */
-    --card-foreground: 24 8% 16%;
-
-    --popover: 38 27% 94%;
-    --popover-foreground: 24 8% 16%;
-
-    /* Soft Terracotta primary */
-    --primary: 13 41% 52%;         /* #B86751 */
+    --background: 0 0% 100%;
+    --foreground: 214 22% 29%;
+    --card: 210 30% 98%;
+    --card-foreground: 214 22% 29%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 22% 29%;
+    --primary: 213 30% 38%;
     --primary-foreground: 0 0% 100%;
-
-    /* Muted Sage secondary */
-    --secondary: 95 11% 62%;       /* #9DA893 */
-    --secondary-foreground: 24 8% 16%;
-
-    /* Sunbeam Butter muted tones */
-    --muted: 43 41% 89%;           /* #EFE8D8 */
-    --muted-foreground: 24 6% 38%;
-
-    /* Accent */
-    --accent: 43 41% 85%;
-    --accent-foreground: 24 8% 16%;
-
-    --destructive: 0 72% 51%;
+    --secondary: 210 28% 95%;
+    --secondary-foreground: 214 22% 29%;
+    --muted: 210 25% 96%;
+    --muted-foreground: 213 11% 53%;
+    --accent: 344 45% 89%;
+    --accent-foreground: 344 43% 39%;
+    --destructive: 0 70% 48%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 11 28% 80%;          /* #DAC1BB */
-    --input: 11 28% 80%;
-    --ring: 13 41% 52%;
-
-    --radius: 0.5rem;
-
-    /* Category colors */
-    --category-toys: 43 41% 80%;
-    --category-clothes: 13 41% 75%;
-    --category-books: 95 11% 70%;
-    --category-outdoor: 140 25% 65%;
-
-    /* Age badge colors */
-    --age-baby: 13 41% 88%;
-    --age-toddler: 43 41% 88%;
-    --age-kids: 95 11% 85%;
-    --age-tweens: 24 8% 85%;
-
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(40 33% 97%) 0%, hsl(38 27% 92%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(38 27% 94%) 100%);
-    --gradient-primary: linear-gradient(135deg, hsl(13 41% 52%) 0%, hsl(13 41% 45%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(95 11% 62%) 0%, hsl(95 11% 52%) 100%);
-
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -4px rgba(45, 41, 38, 0.06);
-    --shadow-card: 0 8px 30px -8px rgba(45, 41, 38, 0.08);
-    --shadow-hover: 0 12px 40px -12px rgba(184, 103, 81, 0.2);
-    --shadow-float: 0 20px 50px -15px rgba(45, 41, 38, 0.1);
-
-    /* Typography */
-    --font-display: 'Newsreader', Georgia, serif;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
-
-    --sidebar-background: 40 33% 97%;
-    --sidebar-foreground: 24 8% 16%;
-    --sidebar-primary: 13 41% 52%;
+    --border: 210 17% 88%;
+    --input: 210 17% 88%;
+    --ring: 213 30% 38%;
+    --radius: 0.2rem;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mark: 'Italianno', cursive;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 214 22% 29%;
+    --sidebar-primary: 213 30% 38%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 38 27% 94%;
-    --sidebar-accent-foreground: 24 8% 16%;
-    --sidebar-border: 11 28% 80%;
-    --sidebar-ring: 13 41% 52%;
+    --sidebar-accent: 210 28% 95%;
+    --sidebar-accent-foreground: 214 22% 29%;
+    --sidebar-border: 210 17% 88%;
+    --sidebar-ring: 213 30% 38%;
   }
-
   .dark {
-    --background: 24 10% 12%;
-    --foreground: 40 20% 95%;
-
-    --card: 24 10% 16%;
-    --card-foreground: 40 20% 95%;
-
-    --popover: 24 10% 16%;
-    --popover-foreground: 40 20% 95%;
-
-    --primary: 13 45% 58%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 95 15% 55%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 24 10% 22%;
-    --muted-foreground: 40 10% 70%;
-
-    --accent: 43 20% 25%;
-    --accent-foreground: 40 20% 95%;
-
-    --border: 24 10% 25%;
-    --input: 24 10% 28%;
-    --ring: 13 45% 58%;
-
-    --gradient-hero: linear-gradient(135deg, hsl(24 10% 12%) 0%, hsl(24 10% 16%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(24 10% 18%) 0%, hsl(24 10% 14%) 100%);
-
-    /* Dark mode shadows — cooler, neutral, higher opacity */
-    --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.20);
-    --shadow-card: 0 8px 30px -8px rgba(0, 0, 0, 0.25);
-    --shadow-hover: 0 12px 40px -12px rgba(0, 0, 0, 0.30);
-    --shadow-float: 0 20px 50px -15px rgba(0, 0, 0, 0.35);
+    --background: 214 20% 13%;
+    --foreground: 210 25% 93%;
+    --card: 214 18% 17%;
+    --card-foreground: 210 25% 93%;
+    --popover: 214 18% 17%;
+    --popover-foreground: 210 25% 93%;
+    --primary: 210 35% 76%;
+    --primary-foreground: 214 24% 17%;
+    --secondary: 214 17% 22%;
+    --secondary-foreground: 210 25% 93%;
+    --muted: 214 17% 22%;
+    --muted-foreground: 210 12% 68%;
+    --accent: 344 28% 31%;
+    --accent-foreground: 344 45% 90%;
+    --destructive: 0 62% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 15% 28%;
+    --input: 214 15% 28%;
+    --ring: 210 35% 76%;
+    --sidebar-background: 214 20% 13%;
+    --sidebar-foreground: 210 25% 93%;
+    --sidebar-primary: 210 35% 76%;
+    --sidebar-primary-foreground: 214 24% 17%;
+    --sidebar-accent: 214 17% 22%;
+    --sidebar-accent-foreground: 210 25% 93%;
+    --sidebar-border: 214 15% 28%;
+    --sidebar-ring: 210 35% 76%;
   }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  html {
-    overflow-x: hidden;
-  }
-
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
-
-  #root {
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
+  #root { min-height: 100vh; overflow-x: hidden; }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    /* Stitch: Newsreader headlines are 400 weight — editorial, not bold */
     @apply font-normal tracking-tight;
-  }
-
-  /* Custom Scrollbar Styles */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--muted));
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary));
-    border-radius: 5px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.8);
-  }
-
-  /* Firefox Scrollbar */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
-  }
-
-  /* Smaller scrollbar on mobile */
-  @media (max-width: 768px) {
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
   }
 }
 
 @layer components {
-  .hero-gradient {
-    background: var(--gradient-hero);
+  .jacadi-wordmark { font-family: var(--font-mark); }
+  .editorial-rule { height: 1px; background: hsl(var(--border)); }
+  .text-link-underline { text-decoration: underline; text-decoration-color: hsl(var(--primary) / .35); text-underline-offset: 5px; }
+  .collection-tile {
+    background-color: hsl(var(--secondary));
+    background-image: radial-gradient(ellipse at 50% 10%, hsl(var(--background) / .7), transparent 62%);
   }
-
-  .card-gradient {
-    background: var(--gradient-card);
-  }
-
-  .btn-gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .btn-gradient-secondary {
-    background: var(--gradient-secondary);
-  }
-
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
-  }
-
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
-
-  .shadow-hover {
-    box-shadow: var(--shadow-hover);
-  }
-
-  .shadow-float {
-    box-shadow: var(--shadow-float);
-  }
-
-  /* Age badges */
-  .age-badge-baby {
-    background-color: hsl(var(--age-baby));
-    color: hsl(340 50% 30%);
-  }
-
-  .age-badge-toddler {
-    background-color: hsl(var(--age-toddler));
-    color: hsl(45 60% 25%);
-  }
-
-  .age-badge-kids {
-    background-color: hsl(var(--age-kids));
-    color: hsl(200 60% 25%);
-  }
-
-  .age-badge-tweens {
-    background-color: hsl(var(--age-tweens));
-    color: hsl(270 40% 30%);
-  }
-
-  /* Category colors */
-  .category-toys {
-    background-color: hsl(var(--category-toys));
-  }
-
-  .category-clothes {
-    background-color: hsl(var(--category-clothes));
-  }
-
-  .category-books {
-    background-color: hsl(var(--category-books));
-  }
-
-  .category-outdoor {
-    background-color: hsl(var(--category-outdoor));
-  }
-
-  /* Prevent horizontal overflow */
-  .container {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  .catalog-card { transition: transform .25s ease, box-shadow .25s ease; }
+  .catalog-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px -22px hsl(var(--foreground) / .32); }
 }
 
-@layer utilities {
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-bounce-soft {
-    animation: bounce-soft 2s ease-in-out infinite;
-  }
-
-  .animate-wiggle {
-    animation: wiggle 1s ease-in-out infinite;
-  }
-
-  .animate-scale-pulse {
-    animation: scale-pulse 3s ease-in-out infinite;
-  }
-
-  .animate-scroll {
-    animation: scroll 20s linear infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  @keyframes bounce-soft {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-  }
-
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(-3deg); }
-    50% { transform: rotate(3deg); }
-  }
-
-  @keyframes scale-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-
-  @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Button Component
+ * Shared UI component.
  * Uses semantic Tailwind tokens (bg-primary, bg-card, border-border, etc.)
  * so both light and dark modes work with proper contrast.
  */

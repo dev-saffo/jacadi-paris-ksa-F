@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Skeleton Component
+ * Shared UI component.
  * bg-muted — semantic token, warm linen in light / dark charcoal in dark.
  * rounded-xl matches Stitch card radius.
  */

@@ -1,17 +1,18 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartSidebar } from '@/components/cart/CartSidebar';
 import { ProductCard } from '@/components/products/ProductCard';
-import { ProductImage } from '@/components/products/ProductImage';
-import { products, categories } from '@/data/products';
+import { products, categories, isProductOutOfStock } from '@/data/products';
+import { CatalogImage } from '@/components/products/CatalogImage';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal, Grid3X3, List, ChevronDown, SearchX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Products = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const categoryParam = searchParams.get('category');
   const filterParam = searchParams.get('filter');
 
@@ -19,6 +20,7 @@ const Products = () => {
   const [sortBy, setSortBy] = useState('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   // Update selected category when URL parameter changes
   useEffect(() => {
@@ -34,7 +36,12 @@ const Products = () => {
     }
 
     if (filterParam === 'sale') {
-      result = result.filter(p => p.originalPrice);
+      result = result.filter(
+        (p) => p.originalPrice != null && p.originalPrice > p.price,
+      );
+    } else if (filterParam === 'new' || filterParam === 'bestseller') {
+      // This catalog does not include release dates or sales-ranking metadata.
+      result = [];
     }
 
     // Sort
@@ -54,6 +61,8 @@ const Products = () => {
 
   const getPageTitle = () => {
     if (filterParam === 'sale') return 'Sale';
+    if (filterParam === 'new') return 'New Arrivals';
+    if (filterParam === 'bestseller') return 'Bestsellers';
     if (selectedCategory) {
       const cat = categories.find(c => c.slug === selectedCategory);
       return cat ? cat.name : 'Products';
@@ -81,7 +90,8 @@ const Products = () => {
 
         <div className="container py-8">
           {/* Category pills */}
-          <div className="flex flex-wrap gap-3 mb-6">
+          <div className="-mx-6 mb-6 overflow-x-auto px-6 pb-2 md:mx-0 md:overflow-visible md:px-0">
+            <div className="flex w-max gap-3 md:w-auto md:flex-wrap">
             <Button
               variant={selectedCategory === null ? 'default' : 'ghost'}
               size="sm"
@@ -90,19 +100,21 @@ const Products = () => {
             >
               All
             </Button>
-            {categories.map((cat) => (
+            {(showAllCategories ? categories : categories.slice(0, 8)).map((cat) => (
               <Button
                 key={cat.id}
                 variant={selectedCategory === cat.slug ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setSelectedCategory(cat.slug)}
-                className="flex items-center justify-between gap-4 h-auto py-3 px-4 min-w-[200px]"
+                className="flex h-auto min-w-[200px] shrink-0 items-center justify-between gap-4 px-4 py-3"
               >
                 <div className="flex items-center gap-2">
-                  <ProductImage
-                    src={cat.image} 
+                  <CatalogImage
+                    src={cat.image}
                     alt={cat.name}
-                    className="w-8 h-8 object-contain"
+                    className="h-8 w-8 object-cover"
+                    fallbackClassName="rounded"
+                    showFallbackLabel={false}
                   />
                   <span className="font-semibold">{cat.name}</span>
                 </div>
@@ -111,6 +123,18 @@ const Products = () => {
                 </span>
               </Button>
             ))}
+            {categories.length > 8 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAllCategories((showing) => !showing)}
+                aria-expanded={showAllCategories}
+                className="h-auto shrink-0 px-4 py-3"
+              >
+                {showAllCategories ? 'Show fewer categories' : 'Show all categories'}
+              </Button>
+            )}
+            </div>
           </div>
 
           {/* Sort & view controls */}
@@ -201,11 +225,14 @@ const Products = () => {
                 No products found
               </h2>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                We couldn't find any products matching your filters. Try adjusting your search criteria.
+                {filterParam === 'new' || filterParam === 'bestseller'
+                  ? 'This catalog does not include release-date or bestseller information yet.'
+                  : "We couldn't find any products matching your filters. Try adjusting your search criteria."}
               </p>
               <Button
                 onClick={() => {
                   setSelectedCategory(null);
+                  navigate('/products');
                 }}
                 variant="default"
               >

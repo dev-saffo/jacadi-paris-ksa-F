@@ -5,7 +5,7 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Select Component
+ * Shared UI component.
  * All colors via semantic tokens: bg-card, border-input, bg-popover,
  * border-border/40, bg-accent, text-primary — adapts in both modes.
  */

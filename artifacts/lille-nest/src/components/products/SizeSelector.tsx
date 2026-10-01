@@ -12,7 +12,7 @@ export function SizeSelector({ sizes, selectedSize, onSelect, outOfStock = [] }:
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="font-display font-semibold text-foreground">Size</span>
-        <button className="text-sm text-primary hover:underline">Size Guide</button>
+        <span className="text-xs text-muted-foreground">Select from the listed sizes</span>
       </div>
       <div className="flex flex-wrap gap-2">
         {sizes.map((size) => {

@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Card Component
+ * Shared UI component.
  * Uses bg-card (linen light / dark surface) + border-border/40 micro-border.
  * Elevation via shadow-card (CSS var adapts per mode), not hardcoded rgba.
  */

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Badge Component
+ * Shared UI component.
  * Pill-shaped (rounded-full), label-sm tracking.
  * Uses semantic tokens only — works in both light & dark modes.
  */

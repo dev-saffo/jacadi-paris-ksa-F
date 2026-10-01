@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Checkbox Component
+ * Shared UI component.
  * Rounded square (4px). bg-card base, border-input border.
  * Checked: bg-primary (terracotta) + white tick. Adapts in dark mode.
  */

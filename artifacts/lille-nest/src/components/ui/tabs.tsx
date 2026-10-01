@@ -4,7 +4,7 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
 
 /**
- * Stitch Nordic Slumber & Nest – Tabs Component
+ * Shared UI component.
  * Pill-rail filter tabs using semantic tokens.
  * bg-card rail → active: bg-primary pill with white text.
  * Hover: bg-muted (adapts in dark mode).
