@@ -117,8 +117,29 @@
 
 ::selection { background: hsl(var(--accent)); color: hsl(var(--foreground)); }
 
+::view-transition-old(root) {
+  animation: theme-transition-out 180ms ease-out both;
+}
+::view-transition-new(root) {
+  animation: theme-transition-reveal 560ms cubic-bezier(.22, 1, .36, 1) both;
+  clip-path: circle(0 at var(--theme-switch-x, 50vw) var(--theme-switch-y, 50vh));
+}
+@keyframes theme-transition-out {
+  to { opacity: 0; }
+}
+@keyframes theme-transition-reveal {
+  to {
+    clip-path: circle(
+      var(--theme-switch-radius, 150vmax)
+      at var(--theme-switch-x, 50vw) var(--theme-switch-y, 50vh)
+    );
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .product-card:hover { transform: none; }
   .gallery-control { transition: none; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; clip-path: none !important; }
 }
