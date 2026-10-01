@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { CatalogImage } from "@/components/products/CatalogImage";
-import { formatMoney, isProductOutOfStock } from "@/data/products";
+import { formatMoney } from "@/data/format-money";
+import { isProductOutOfStock } from "@/data/products";
 import { Product } from "@/types/product";
 import { cn } from "@/lib/utils";
 import type { ImgHTMLAttributes } from "react";

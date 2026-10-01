@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ArrowUpRight, Heart, Share2, Facebook, Twitter, Link as LinkIcon, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { formatMoney, isProductOutOfStock } from '@/data/products';
+import { formatMoney } from '@/data/format-money';
+import { isProductOutOfStock } from '@/data/products';
 import { Product } from '@/types/product';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';

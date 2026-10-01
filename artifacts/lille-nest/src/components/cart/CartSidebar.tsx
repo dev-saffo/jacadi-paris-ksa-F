@@ -4,7 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { CatalogImage } from '@/components/products/CatalogImage';
-import { formatMoney } from '@/data/products';
+import { formatMoney } from '@/data/format-money';
 
 export function CartSidebar() {
   const { items, isOpen, closeCart, subtotal, removeItem, updateQuantity } = useCart();

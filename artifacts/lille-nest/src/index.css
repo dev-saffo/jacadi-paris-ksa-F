@@ -141,10 +141,10 @@
 ::selection { background: hsl(var(--accent)); color: hsl(var(--foreground)); }
 
 ::view-transition-old(root) {
-  animation: theme-transition-out 180ms ease-out both;
+  animation: theme-transition-out 120ms ease-out both;
 }
 ::view-transition-new(root) {
-  animation: theme-transition-reveal 560ms cubic-bezier(.22, 1, .36, 1) both;
+  animation: theme-transition-reveal 320ms cubic-bezier(.22, 1, .36, 1) both;
   clip-path: circle(0 at var(--theme-switch-x, 50vw) var(--theme-switch-y, 50vh));
 }
 @keyframes theme-transition-out {
@@ -156,6 +156,20 @@
       var(--theme-switch-radius, 150vmax)
       at var(--theme-switch-x, 50vw) var(--theme-switch-y, 50vh)
     );
+  }
+}
+@keyframes theme-transition-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation-duration: 100ms;
+  }
+  ::view-transition-new(root) {
+    animation: theme-transition-fade-in 160ms ease-out both;
+    clip-path: none;
   }
 }
 

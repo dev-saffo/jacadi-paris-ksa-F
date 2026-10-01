@@ -63,3 +63,29 @@ export interface JacadiCatalog {
   products: Product[];
   pages: SourcePage[];
 }
+
+export type HomeFeaturedProduct = Pick<
+  Product,
+  "id" | "title" | "slug" | "price" | "currency" | "categoryName"
+> & { image?: string };
+
+export type HomeCategorySummary = Pick<Category, "id" | "name" | "slug"> & {
+  productCount: number;
+  image?: string;
+};
+
+export type HomeEditorialPage = Pick<
+  SourcePage,
+  "slug" | "title" | "description"
+> & { image?: string };
+
+export interface HomeCatalogSummary {
+  productCount: number;
+  homeDescription: string;
+  featuredProducts: HomeFeaturedProduct[];
+  featuredCategories: HomeCategorySummary[];
+  navigationCategories: Pick<Category, "name" | "slug">[];
+  footerCategories: Pick<Category, "name" | "slug">[];
+  footerPages: Pick<SourcePage, "slug" | "title">[];
+  editorialPages: HomeEditorialPage[];
+}

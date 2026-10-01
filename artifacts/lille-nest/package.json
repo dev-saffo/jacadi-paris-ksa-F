@@ -5,11 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
+    "predev": "pnpm run prepare:home-data",
     "build": "vite build --config vite.config.ts",
+    "prebuild": "pnpm run prepare:home-data",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretypecheck": "pnpm run prepare:home-data",
     "test": "vitest run --config vitest.config.ts",
-    "test:watch": "vitest --config vitest.config.ts"
+    "pretest": "pnpm run prepare:home-data",
+    "pretest:watch": "pnpm run prepare:home-data",
+    "test:watch": "vitest --config vitest.config.ts",
+    "prepare:home-data": "node scripts/generate-home-catalog.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -44,9 +50,10 @@
     "@replit/vite-plugin-dev-banner": "catalog:",
     "@replit/vite-plugin-runtime-error-modal": "catalog:",
     "@tailwindcss/typography": "^0.5.15",
+    "@tanstack/react-query": "catalog:",
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
-    "@tanstack/react-query": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

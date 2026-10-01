@@ -1,0 +1,1 @@
+- [pnpm package installs](pnpm-package-installs.md) — If package installation targets the workspace root and fails, retry with the target package filter.

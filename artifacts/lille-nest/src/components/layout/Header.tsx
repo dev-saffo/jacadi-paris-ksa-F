@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { categories } from '@/data/products';
+import { homeData } from '@/data/home-data';
 
 export function Header() {
   const { itemCount, toggleCart } = useCart();
@@ -14,7 +14,7 @@ export function Header() {
   const location = useLocation();
   const navLinks: { label: string; href: string; sale?: boolean }[] = [
     { label: 'Collections', href: '/products' },
-    ...categories.slice(0, 2).map((category) => ({
+    ...homeData.navigationCategories.map((category) => ({
       label:
         category.slug === 'jumpers-sweatshirts-and-cardigans'
           ? 'Jumpers & cardigans'

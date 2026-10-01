@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { categories, sourcePages } from '@/data/products';
+import { homeData } from '@/data/home-data';
 
 export function Footer() {
-  const categoryLinks = categories.slice(0, 5).map((category) => ({
+  const categoryLinks = homeData.footerCategories.map((category) => ({
     label: category.name,
     href: `/products?category=${encodeURIComponent(category.slug)}`,
   }));
@@ -18,8 +18,8 @@ export function Footer() {
   ].map((group) => ({
     ...group,
     links: group.pages
-      .map((slug) => sourcePages.find((page) => page.slug === slug))
-      .filter((page): page is (typeof sourcePages)[number] => Boolean(page)),
+      .map((slug) => homeData.footerPages.find((page) => page.slug === slug))
+      .filter((page): page is (typeof homeData.footerPages)[number] => Boolean(page)),
   }));
   return (
     <footer id="site-footer" className="border-t border-border bg-secondary/55">
@@ -31,7 +31,7 @@ export function Footer() {
               <span className="mt-2 text-[8px] tracking-[.44em] text-muted-foreground">PARIS</span>
             </Link>
             <p className="max-w-md text-sm leading-6 text-muted-foreground xl:max-w-[250px]">
-              {sourcePages.find((page) => page.slug === 'home')?.description}
+              {homeData.homeDescription}
             </p>
           </div>
           <div className="min-w-0">

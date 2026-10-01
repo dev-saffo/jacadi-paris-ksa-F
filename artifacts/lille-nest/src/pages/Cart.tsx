@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartSidebar } from "@/components/cart/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
-import { formatMoney } from "@/data/products";
+import { formatMoney } from "@/data/format-money";
 import { CatalogImage } from "@/components/products/CatalogImage";
 
 const Cart = () => {

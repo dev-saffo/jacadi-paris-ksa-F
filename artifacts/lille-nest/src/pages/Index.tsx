@@ -4,18 +4,13 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartSidebar } from '@/components/cart/CartSidebar';
 import { CatalogImage } from '@/components/products/CatalogImage';
-import { categories, formatMoney, getFeaturedProducts, products, sourcePages } from '@/data/products';
-import type { Category, Product } from '@/types/product';
+import { formatMoney } from '@/data/format-money';
+import { homeData } from '@/data/home-data';
+import type { HomeCategorySummary, HomeFeaturedProduct } from '@/types/product';
 
-const homePage = sourcePages.find((page) => page.slug === 'home');
-const featuredProducts = getFeaturedProducts();
-const featuredCategories = categories.slice(0, 4);
-const editorialSlugs = ['back-to-school', 'special-occasions-collection', 'newborn-gift', 'the-care-of-fine-materials'];
-const editorialPages = editorialSlugs
-  .map((slug) => sourcePages.find((page) => page.slug === slug))
-  .filter((page): page is (typeof sourcePages)[number] => Boolean(page));
+const { featuredProducts, featuredCategories, editorialPages } = homeData;
 
-function ProductTile({ product }: { product: Product }) {
+function ProductTile({ product }: { product: HomeFeaturedProduct }) {
   return (
     <Link
       to={`/products/${product.slug}`}
@@ -24,7 +19,7 @@ function ProductTile({ product }: { product: Product }) {
     >
       <div className="featured-product-image relative flex aspect-[.82] items-center justify-center overflow-hidden bg-secondary/50">
         <CatalogImage
-          src={product.images[0]}
+          src={product.image}
           alt={product.title}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
         />
@@ -47,7 +42,7 @@ function ProductTile({ product }: { product: Product }) {
   );
 }
 
-function CollectionLink({ category, index }: { category: Category; index: number }) {
+function CollectionLink({ category, index }: { category: HomeCategorySummary; index: number }) {
   return (
     <Link
       to={`/products?category=${encodeURIComponent(category.slug)}`}
@@ -92,7 +87,7 @@ const Index = () => {
                 Baby, toddler and children clothes, shoes and accessories
               </h1>
               <p className="mt-7 max-w-[510px] text-[15px] leading-7 text-muted-foreground">
-                {homePage?.description}
+                {homeData.homeDescription}
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
                 <Link
@@ -110,13 +105,13 @@ const Index = () => {
             <div className="relative hidden h-[410px] items-center justify-center md:flex">
               <div className="absolute right-[6%] top-[8%] h-[350px] w-[78%] rotate-2 rounded-[46%_42%_44%_40%] bg-secondary/85" />
               <div className="absolute right-[1%] top-[5%] h-[360px] w-[78%] overflow-hidden rounded-[46%_42%_44%_40%] shadow-[0_28px_45px_-32px_hsl(var(--foreground)/.5)]">
-                <CatalogImage src={featuredProducts[0]?.images[0]} alt={featuredProducts[0]?.title ?? 'Jacadi collection'} className="h-full w-full object-cover" />
+              <CatalogImage src={featuredProducts[0]?.image} alt={featuredProducts[0]?.title ?? 'Jacadi collection'} className="h-full w-full object-cover" loading="eager" fetchPriority="high" />
               </div>
               <div className="absolute bottom-2 left-0 w-[47%] overflow-hidden rounded-[45%_42%_40%_48%] border-[7px] border-background shadow-lg">
-                <CatalogImage src={featuredProducts[1]?.images[0]} alt={featuredProducts[1]?.title ?? 'Jacadi collection'} className="aspect-[.88] w-full object-cover" />
+                <CatalogImage src={featuredProducts[1]?.image} alt={featuredProducts[1]?.title ?? 'Jacadi collection'} className="aspect-[.88] w-full object-cover" />
               </div>
               <span className="absolute bottom-5 left-10 max-w-[145px] text-[10px] uppercase leading-5 tracking-[.18em] text-muted-foreground">
-                {products.length} products in the Saudi catalogue
+                {homeData.productCount} products in the Saudi catalogue
               </span>
               <span className="absolute right-0 top-12 h-3 w-3 rounded-full bg-accent" />
             </div>
@@ -152,7 +147,7 @@ const Index = () => {
             </div>
             {featuredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-4 sm:gap-x-5">
-                {featuredProducts.slice(0, 4).map((product) => (
+                {featuredProducts.map((product) => (
                   <ProductTile key={product.id} product={product} />
                 ))}
               </div>
@@ -199,9 +194,9 @@ const Index = () => {
                     <h3 className="max-w-[420px] text-2xl text-primary transition-colors group-hover:text-foreground group-focus-visible:text-foreground sm:text-[30px]">{page.title}</h3>
                     {page.description && <p className="mt-3 line-clamp-2 max-w-[490px] text-sm leading-6 text-muted-foreground">{page.description}</p>}
                   </div>
-                  {page.images[0] && (
+                  {page.image && (
                     <div className="hidden w-[31%] shrink-0 overflow-hidden rounded-[.9rem] sm:block">
-                      <CatalogImage src={page.images[0]} alt="" className="aspect-[1.45] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]" />
+                      <CatalogImage src={page.image} alt="" className="aspect-[1.45] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]" />
                     </div>
                   )}
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-primary transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1">
@@ -223,7 +218,7 @@ const Index = () => {
               <span className="jacadi-wordmark text-5xl leading-none text-primary">J</span>
               <div>
                 <p className="text-[10px] uppercase tracking-[.19em] text-muted-foreground">Jacadi Paris</p>
-                <p className="mt-2 max-w-[620px] text-sm leading-6 text-foreground/80">{homePage?.description}</p>
+                <p className="mt-2 max-w-[620px] text-sm leading-6 text-foreground/80">{homeData.homeDescription}</p>
               </div>
             </div>
             <Link to="/pages/our-story" className="inline-flex shrink-0 items-center gap-3 text-xs font-medium uppercase tracking-[.13em] text-primary" data-testid="link-read-our-story">
