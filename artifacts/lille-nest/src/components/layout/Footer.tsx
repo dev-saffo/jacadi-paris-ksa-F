@@ -22,31 +22,31 @@ export function Footer() {
       .filter((page): page is (typeof sourcePages)[number] => Boolean(page)),
   }));
   return (
-    <footer className="border-t border-border bg-secondary/60">
-      <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 md:py-16 lg:px-12">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-5 md:gap-12">
-          <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="mb-5 inline-flex flex-col items-center leading-none" aria-label="Jacadi Paris home" data-testid="link-footer-home">
-              <span className="jacadi-wordmark text-[46px] leading-[.74] text-primary">Jacadi</span>
+    <footer id="site-footer" className="border-t border-border bg-secondary/60">
+      <div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-16">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 sm:gap-y-10 xl:grid-cols-5 xl:gap-12">
+          <div className="min-w-0 sm:col-span-2 xl:col-span-1">
+            <Link to="/" className="mb-5 inline-flex w-fit flex-col items-start leading-none" aria-label="Jacadi Paris home" data-testid="link-footer-home">
+              <span className="jacadi-wordmark text-[44px] leading-[.74] text-primary">Jacadi</span>
               <span className="mt-2 text-[8px] tracking-[.44em] text-muted-foreground">PARIS</span>
             </Link>
-            <p className="max-w-[250px] text-sm leading-6 text-muted-foreground">
+            <p className="max-w-md text-sm leading-6 text-muted-foreground xl:max-w-[250px]">
               {sourcePages.find((page) => page.slug === 'home')?.description}
             </p>
           </div>
-          <div>
-            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[.15em] text-foreground">Collections</h4>
+          <div className="min-w-0">
+            <h4 className="mb-4 text-[11px] font-semibold uppercase leading-4 tracking-[.15em] text-foreground">Collections</h4>
             <ul className="space-y-3">
-              <li><Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-primary" data-testid="link-footer-all-products">All collections</Link></li>
-              <li><Link to="/pages/outlet" className="text-sm text-accent-foreground transition-colors hover:underline" data-testid="link-footer-outlet">Outlet</Link></li>
+              <li><Link to="/products" className="block break-words text-sm leading-5 text-muted-foreground transition-colors hover:text-primary" data-testid="link-footer-all-products">All collections</Link></li>
+              <li><Link to="/pages/outlet" className="block break-words text-sm leading-5 text-accent-foreground transition-colors hover:underline" data-testid="link-footer-outlet">Outlet</Link></li>
             </ul>
           </div>
-          <div>
-            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[.15em] text-foreground">Categories</h4>
+          <div className="min-w-0">
+            <h4 className="mb-4 text-[11px] font-semibold uppercase leading-4 tracking-[.15em] text-foreground">Categories</h4>
             <ul className="space-y-3">
               {categoryLinks.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground transition-colors hover:text-primary" data-testid={`link-footer-category-${link.label.toLowerCase().replace(/\W+/g, '-')}`}>
+                  <Link to={link.href} className="block break-words text-sm leading-5 text-muted-foreground transition-colors hover:text-primary" data-testid={`link-footer-category-${link.label.toLowerCase().replace(/\W+/g, '-')}`}>
                     {link.label}
                   </Link>
                 </li>
@@ -54,21 +54,21 @@ export function Footer() {
             </ul>
           </div>
           {pageGroups.map((group) => (
-            <div key={group.heading}>
-              <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[.15em] text-foreground">{group.heading}</h4>
+            <div key={group.heading} className="min-w-0">
+              <h4 className="mb-4 text-[11px] font-semibold uppercase leading-4 tracking-[.15em] text-foreground">{group.heading}</h4>
               <ul className="space-y-3">
                 {group.links.map((page) => (
-                <li key={page.slug}>
-                  <Link to={`/pages/${page.slug}`} className="text-sm text-muted-foreground transition-colors hover:text-primary" data-testid={`link-footer-page-${page.slug}`}>
-                    {page.title}
-                  </Link>
-                </li>
+                  <li key={page.slug}>
+                    <Link to={`/pages/${page.slug}`} className="block break-words text-sm leading-5 text-muted-foreground transition-colors hover:text-primary" data-testid={`link-footer-page-${page.slug}`}>
+                      {page.title}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center">
+        <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 sm:mt-12 sm:flex-row sm:items-center">
           <p className="text-xs tracking-wide text-muted-foreground">
             © {new Date().getFullYear()} Jacadi Paris
           </p>
