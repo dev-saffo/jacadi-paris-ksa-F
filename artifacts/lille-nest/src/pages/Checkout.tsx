@@ -11,11 +11,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/context/CartContext';
 import { CreditCard, Truck, Lock, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { CatalogImage } from '@/components/products/CatalogImage';
+import { formatMoney } from '@/data/products';
 
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+  const currency = items[0]?.product.currency ?? 'SAR';
   
   const shipping = subtotal >= 50 ? 0 : 5.99;
   const tax = subtotal * 0.08;
@@ -346,9 +349,12 @@ const Checkout = () => {
                   <h2 className="font-display text-xl font-bold mb-6">Order Summary</h2>
 
                   <div className="space-y-4 mb-6">
-                    {items.map(({ product, quantity }) => (
-                      <div key={product.id} className="flex gap-3">
-                        <img
+                    {items.map(({ product, quantity, selectedSize }) => (
+                      <div
+                        key={`${product.id}-${selectedSize ?? 'one-size'}`}
+                        className="flex gap-3"
+                      >
+                        <CatalogImage
                           src={product.images[0]}
                           alt={product.title}
                           className="h-16 w-16 rounded object-cover"
@@ -356,7 +362,12 @@ const Checkout = () => {
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm truncate">{product.title}</p>
                           <p className="text-sm text-muted-foreground">Qty: {quantity}</p>
-                          <p className="text-sm font-semibold">SAR {(product.price * quantity).toFixed(2)}</p>
+                          {selectedSize && (
+                            <p className="text-xs text-muted-foreground">Size: {selectedSize}</p>
+                          )}
+                          <p className="text-sm font-semibold">
+                            {formatMoney(product.price * quantity, product.currency)}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -365,19 +376,19 @@ const Checkout = () => {
                   <div className="space-y-3 mb-6 pt-6 border-t">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>SAR {subtotal.toFixed(2)}</span>
+                      <span>{formatMoney(subtotal, currency)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Shipping</span>
-                      <span>{shipping === 0 ? 'FREE' : `SAR ${shipping.toFixed(2)}`}</span>
+                      <span>{shipping === 0 ? 'FREE' : formatMoney(shipping, currency)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Tax</span>
-                      <span>SAR {tax.toFixed(2)}</span>
+                      <span>{formatMoney(tax, currency)}</span>
                     </div>
                     <div className="border-t pt-3 flex justify-between">
                       <span className="font-display font-bold text-lg">Total</span>
-                      <span className="font-display font-bold text-lg">SAR {total.toFixed(2)}</span>
+                      <span className="font-display font-bold text-lg">{formatMoney(total, currency)}</span>
                     </div>
                   </div>
 

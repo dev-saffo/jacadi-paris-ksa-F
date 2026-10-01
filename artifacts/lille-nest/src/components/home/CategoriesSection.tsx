@@ -10,12 +10,12 @@ export function CategoriesSection() {
             Shop by Category
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            From sensory-friendly toys to cool breathable organic clothes for the Saudi summer
+            Explore the collections represented in our product catalog.
           </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {categories.map((category) => (
+          {categories.slice(0, 8).map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
         </div>

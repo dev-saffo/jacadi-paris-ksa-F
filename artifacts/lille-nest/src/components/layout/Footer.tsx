@@ -1,19 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Youtube, Lock, ShieldCheck } from 'lucide-react';
 import { content } from '@/data/content';
+import { categories } from '@/data/products';
 
 const footerLinks = {
   shop: [
     { label: 'All Products', href: '/products' },
-    { label: 'New Arrivals', href: '/products?filter=new' },
-    { label: 'Bestsellers', href: '/products?filter=bestseller' },
     { label: 'Sale', href: '/products?filter=sale' },
-  ],
-  categories: [
-    { label: 'Organic Innerwear', href: '/products?category=clothes' },
-    { label: 'Sleepwear & Pajamas', href: '/products?category=clothes' },
-    { label: 'Toys & Games', href: '/products?category=toys' },
-    { label: 'Storybooks', href: '/products?category=books' },
   ],
   help: [
     { label: 'Contact Us', href: '/contact' },
@@ -26,11 +19,16 @@ const footerLinks = {
     { label: 'GOTS & OEKO-TEX®', href: '/sustainability' },
     { label: 'Gift Cards', href: '/gift-cards' },
     { label: 'Editorial Journal', href: '/blog' },
+    { label: 'Catalog Pages', href: '/pages' },
   ],
 };
 
 export function Footer() {
   const { footer } = content;
+  const categoryLinks = categories.slice(0, 4).map((category) => ({
+    label: category.name,
+    href: `/products?category=${category.slug}`,
+  }));
   return (
     <footer className="bg-muted border-t border-border">
       <div className="container py-12 md:py-16">
@@ -77,7 +75,7 @@ export function Footer() {
           <div>
             <h4 className="font-display font-semibold text-foreground mb-4 text-base">Categories</h4>
             <ul className="space-y-2.5">
-              {footerLinks.categories.map((link) => (
+              {categoryLinks.map((link) => (
                 <li key={link.href}>
                   <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     {link.label}

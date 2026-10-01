@@ -5,20 +5,20 @@ import { useCart } from '@/context/CartContext';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-const navLinks = [
-  { label: 'Shop All', href: '/products' },
-  { label: 'New Arrivals', href: '/products?filter=new' },
-  { label: 'Toys', href: '/products?category=toys' },
-  { label: 'Clothing', href: '/products?category=clothes' },
-  { label: 'Books', href: '/products?category=books' },
-  { label: 'Sale', href: '/products?filter=sale' },
-];
+import { categories } from '@/data/products';
 
 export function Header() {
   const { itemCount, toggleCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navLinks = [
+    { label: 'Shop All', href: '/products' },
+    ...categories.slice(0, 3).map((category) => ({
+      label: category.name,
+      href: `/products?category=${category.slug}`,
+    })),
+    { label: 'Sale', href: '/products?filter=sale' },
+  ];
 
   const isActiveLink = (href: string) => {
     const currentPath = location.pathname + location.search;
@@ -67,7 +67,7 @@ export function Header() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors rounded",
+                  "max-w-44 truncate rounded px-3 py-2 text-sm font-medium transition-colors",
                   isActiveLink(link.href)
                     ? "text-primary bg-primary/10 font-semibold"
                     : "text-foreground/80 hover:text-primary hover:bg-muted"

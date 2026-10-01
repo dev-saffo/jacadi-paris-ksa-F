@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { CatalogImage } from '@/components/products/CatalogImage';
+import { formatMoney } from '@/data/products';
 
 export function CartSidebar() {
   const { items, isOpen, closeCart, subtotal, removeItem, updateQuantity } = useCart();
@@ -43,7 +45,7 @@ export function CartSidebar() {
               <span className="text-6xl mb-4">🛒</span>
               <h3 className="font-display font-semibold text-lg mb-2">Your cart is empty</h3>
               <p className="text-muted-foreground text-sm mb-6">
-                Discover our wonderful collection of toys, clothes, and books!
+                Discover the collection.
               </p>
               <Button onClick={closeCart}>
                 Start Shopping
@@ -51,13 +53,13 @@ export function CartSidebar() {
             </div>
           ) : (
             <ul className="space-y-4">
-              {items.map(({ product, quantity }) => (
+              {items.map(({ product, quantity, selectedSize }) => (
                 <li
-                  key={product.id}
+                  key={`${product.id}-${selectedSize ?? "one-size"}`}
                   className="flex gap-4 p-3 bg-muted rounded animate-fade-in"
                 >
                   <div className="h-20 w-20 rounded bg-card overflow-hidden flex-shrink-0">
-                    <img
+                    <CatalogImage
                       src={product.images[0]}
                       alt={product.title}
                       className="h-full w-full object-cover"
@@ -68,14 +70,19 @@ export function CartSidebar() {
                       {product.title}
                     </h4>
                     <p className="text-primary font-semibold text-sm mt-1">
-                      ${product.price.toFixed(2)}
+                      {formatMoney(product.price, product.currency)}
                     </p>
+                    {selectedSize && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Size: {selectedSize}
+                      </p>
+                    )}
                     <div className="flex items-center gap-2 mt-2">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => updateQuantity(product.id, quantity - 1)}
+                        onClick={() => updateQuantity(product.id, quantity - 1, selectedSize)}
                         aria-label="Decrease quantity"
                       >
                         <Minus className="h-3 w-3" />
@@ -85,7 +92,7 @@ export function CartSidebar() {
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => updateQuantity(product.id, quantity + 1)}
+                        onClick={() => updateQuantity(product.id, quantity + 1, selectedSize)}
                         aria-label="Increase quantity"
                       >
                         <Plus className="h-3 w-3" />
@@ -96,7 +103,7 @@ export function CartSidebar() {
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={() => removeItem(product.id)}
+                    onClick={() => removeItem(product.id, selectedSize)}
                     aria-label={`Remove ${product.title} from cart`}
                   >
                     <X className="h-4 w-4" />

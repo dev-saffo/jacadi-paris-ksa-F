@@ -7,12 +7,11 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ currentProduct }: RelatedProductsProps) {
-  // Get related products based on category and age range
+  // Only use category membership; the catalog has no age-range metadata.
   const relatedProducts = products
     .filter((p) => p.id !== currentProduct.id)
-    .filter((p) => 
-      p.categories.some((cat) => currentProduct.categories.includes(cat)) ||
-      (p.ageRange.min <= currentProduct.ageRange.max && p.ageRange.max >= currentProduct.ageRange.min)
+    .filter((p) =>
+      p.categories.some((cat) => currentProduct.categories.includes(cat)),
     )
     .slice(0, 4);
 

@@ -6,9 +6,9 @@ interface CartContextType {
   isOpen: boolean;
   itemCount: number;
   subtotal: number;
-  addItem: (product: Product, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addItem: (product: Product, quantity?: number, selectedSize?: string) => void;
+  removeItem: (productId: string, selectedSize?: string) => void;
+  updateQuantity: (productId: string, quantity: number, selectedSize?: string) => void;
   clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -21,33 +21,43 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const addItem = useCallback((product: Product, quantity = 1) => {
+  const addItem = useCallback((product: Product, quantity = 1, selectedSize?: string) => {
     setItems(prev => {
-      const existing = prev.find(item => item.product.id === product.id);
+      const existing = prev.find(
+        (item) =>
+          item.product.id === product.id && item.selectedSize === selectedSize,
+      );
       if (existing) {
         return prev.map(item =>
-          item.product.id === product.id
+          item.product.id === product.id && item.selectedSize === selectedSize
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product, quantity, selectedSize }];
     });
     setIsOpen(true);
   }, []);
 
-  const removeItem = useCallback((productId: string) => {
-    setItems(prev => prev.filter(item => item.product.id !== productId));
+  const removeItem = useCallback((productId: string, selectedSize?: string) => {
+    setItems(prev =>
+      prev.filter(
+        (item) =>
+          item.product.id !== productId || item.selectedSize !== selectedSize,
+      ),
+    );
   }, []);
 
-  const updateQuantity = useCallback((productId: string, quantity: number) => {
+  const updateQuantity = useCallback((productId: string, quantity: number, selectedSize?: string) => {
     if (quantity <= 0) {
-      removeItem(productId);
+      removeItem(productId, selectedSize);
       return;
     }
     setItems(prev =>
       prev.map(item =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId && item.selectedSize === selectedSize
+          ? { ...item, quantity }
+          : item
       )
     );
   }, [removeItem]);

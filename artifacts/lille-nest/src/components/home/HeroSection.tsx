@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, ShieldCheck, HeartHandshake, Leaf } from 'lucide-react';
 import { content } from '@/data/content';
+import { categories } from '@/data/products';
 
 export function HeroSection() {
   const { hero } = content;
@@ -33,8 +34,14 @@ export function HeroSection() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="rounded-full px-8 border-primary/20 text-foreground hover:bg-card text-base">
-                <Link to="/products?category=clothes">
-                  {hero.secondaryCta}
+                <Link
+                  to={
+                    categories[0]
+                      ? `/products?category=${categories[0].slug}`
+                      : "/products"
+                  }
+                >
+                  {categories[0]?.name ?? "Shop by category"}
                 </Link>
               </Button>
             </div>

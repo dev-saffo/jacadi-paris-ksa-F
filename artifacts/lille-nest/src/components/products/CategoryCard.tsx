@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Category } from '@/types/product';
+import { CatalogImage } from '@/components/products/CatalogImage';
 import { cn } from '@/lib/utils';
 
 interface CategoryCardProps {
@@ -20,10 +21,11 @@ export function CategoryCard({ category, className }: CategoryCardProps) {
       {/* Left: Category Image and Name */}
       <div className="flex items-center gap-4 flex-1">
         <div className="flex-shrink-0">
-          <img 
+          <CatalogImage
             src={category.image}
             alt={category.name}
-            className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-300 group-hover:scale-110"
+            className="h-16 w-16 object-cover transition-transform duration-300 group-hover:scale-110 md:h-20 md:w-20"
+            fallbackClassName="rounded-md"
           />
         </div>
         <h3 className="font-display font-normal text-foreground text-xl">

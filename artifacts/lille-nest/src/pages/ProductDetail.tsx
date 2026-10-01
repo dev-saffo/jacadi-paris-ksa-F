@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -7,18 +7,13 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { ImageGallery } from '@/components/products/ImageGallery';
 import { SizeSelector } from '@/components/products/SizeSelector';
 import { QuantitySelector } from '@/components/products/QuantitySelector';
-import { ProductInfo, ProductBenefits, ProductActions } from '@/components/products/ProductInfo';
+import { ProductInfo, ProductActions } from '@/components/products/ProductInfo';
 import { RelatedProducts } from '@/components/products/RelatedProducts';
-import { ProductReviews } from '@/components/products/ProductReviews';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
-import { products, categories } from '@/data/products';
+import { isProductOutOfStock, products, categories } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
-
-// Mock sizes for clothing products
-const clothingSizes = ['2T', '3T', '4T', '5', '6', '7', '8'];
-const shoeSizes = ['5', '6', '7', '8', '9', '10', '11', '12'];
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -28,6 +23,11 @@ const ProductDetail = () => {
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    setSelectedSize(null);
+    setQuantity(1);
+  }, [slug]);
 
   if (!product) {
     return (
@@ -51,17 +51,17 @@ const ProductDetail = () => {
     );
   }
 
-  const isClothing = product.categories.includes('clothes');
-  const sizes = isClothing ? clothingSizes : null;
+  const sizes = product.sizes;
+  const outOfStock = isProductOutOfStock(product);
   
   const category = categories.find((c) => product.categories.includes(c.slug));
 
   const handleAddToCart = () => {
-    if (isClothing && !selectedSize) {
+    if (sizes.length > 0 && !selectedSize) {
       toast.error('Please select a size');
       return;
     }
-    addItem(product, quantity);
+    addItem(product, quantity, selectedSize ?? undefined);
     toast.success(`Added ${quantity} item(s) to cart!`);
   };
 
@@ -92,12 +92,11 @@ const ProductDetail = () => {
               <ProductInfo product={product} />
 
               {/* Size selector (for clothing) */}
-              {sizes && (
+              {sizes.length > 0 && (
                 <SizeSelector
                   sizes={sizes}
                   selectedSize={selectedSize}
                   onSelect={setSelectedSize}
-                  outOfStock={['7', '8']}
                 />
               )}
 
@@ -105,7 +104,6 @@ const ProductDetail = () => {
               <QuantitySelector
                 quantity={quantity}
                 onQuantityChange={setQuantity}
-                max={product.stock}
               />
 
               {/* Add to cart */}
@@ -113,24 +111,16 @@ const ProductDetail = () => {
                 size="xl"
                 className="w-full"
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                disabled={outOfStock}
               >
                 <ShoppingBag className="h-5 w-5 mr-2" />
-                {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                {outOfStock ? 'Out of Stock' : 'Add to Cart'}
               </Button>
 
-              <ProductBenefits />
               <ProductActions />
             </div>
           </div>
         </section>
-
-        {/* Reviews */}
-        <ProductReviews
-          productId={product.id}
-          rating={product.rating}
-          reviewCount={product.reviewCount}
-        />
 
         {/* Related products */}
         <RelatedProducts currentProduct={product} />
